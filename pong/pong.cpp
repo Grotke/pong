@@ -26,6 +26,7 @@ int main() {
 		}
 
 		window.clear(sf::Color::Black);
+
 		constructDottedLine(lines, 5, 20);
 		window.draw(lines);
 		window.draw(player1.getSprite());
