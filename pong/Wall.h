@@ -1,11 +1,13 @@
 #pragma once
+#include "GameObject.h"
 #include <SFML/Graphics.hpp>
 
-class Wall
+class Wall:
+	public GameObject
 {
 public:
 	Wall(int x, int y);
-	~Wall();
+	virtual ~Wall();
 
 	sf::RectangleShape getSprite();
 
