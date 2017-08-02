@@ -147,14 +147,22 @@
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Paddle.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="pong.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Paddle.h" />
+    <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="Vectors.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
