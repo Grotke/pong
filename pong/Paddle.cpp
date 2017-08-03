@@ -6,7 +6,10 @@
 Paddle::Paddle(int x, int y, Controller& control)
 	: x(x), y(y), controller(control)
 {
-	sprite = sf::RectangleShape(sf::Vector2f(DEFAULT_RECT_WIDTH, DEFAULT_RECT_HEIGHT));
+	float width = DEFAULT_RECT_WIDTH;
+	float height = DEFAULT_RECT_HEIGHT;
+	sprite = sf::RectangleShape(sf::Vector2f(width, height));
+	sprite.setOrigin(width / 2, height / 2);
 	sprite.setFillColor(sf::Color::White);
 	sprite.setPosition(x, y);
 	controller.attachParent(this);

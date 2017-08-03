@@ -19,7 +19,7 @@ private:
 	sf::CircleShape sprite;
 	float speedInPixelsPerSec;
 	sf::Vector2f direction;
-	float radius;
+	float radius = 25.f;
 	int x;
 	int y;
 };

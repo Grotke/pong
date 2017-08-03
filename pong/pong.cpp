@@ -16,8 +16,8 @@ int main()
 		Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, p1);
 		Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, p2);
 		Ball ball = Ball(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2);
-		Wall topWall = Wall(0, 0);
-		Wall bottomWall = Wall(0, Config::SCREEN_HEIGHT - 20);
+		Wall topWall = Wall(Config::SCREEN_WIDTH/2, 0);
+		Wall bottomWall = Wall(Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT);
 		sf::VertexArray lines(sf::Lines);
 		sf::Clock clock;
 

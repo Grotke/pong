@@ -5,7 +5,8 @@
 
 Ball::Ball(int x, int y):x(x), y(y)
 {
-	sprite = sf::CircleShape(25.f);
+	sprite = sf::CircleShape(radius);
+	sprite.setOrigin(radius, radius);
 	sprite.setPosition(x, y);
 	sprite.setFillColor(sf::Color::White);
 	speedInPixelsPerSec = chooseRandomSpeed();
