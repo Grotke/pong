@@ -16,8 +16,8 @@ public:
 
 	};
 
-	Contact resolve(const CircleCollider& collider) const;
-	Contact resolve(const BoxCollider& collider) const;
+	Collider::Contact resolve(const CircleCollider& collider) const;
+	float resolve(const BoxCollider& collider) const;
 private:
 	const std::array<const Collider const*, 5>& colliders;
 

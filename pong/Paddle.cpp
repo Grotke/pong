@@ -58,9 +58,10 @@ void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& 
 	{
 		sprite.move(0, -secondsPassed*speedInPixelsPerSec);
 		auto output = c.resolve(b);
-		if (output.interpenetration == 1)
+		if (output)
 		{
 			sprite.setFillColor(sf::Color::Green);
+			sprite.move(0, output);
 		}
 		else
 		{
@@ -71,9 +72,11 @@ void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& 
 	{
 		sprite.move(0, secondsPassed*speedInPixelsPerSec);
 		auto output = c.resolve(b);
-		if (output.interpenetration == 1)
+		if (output)
 		{
 			sprite.setFillColor(sf::Color::Green);
+			sprite.move(0, -output);
+
 		}
 		else
 		{

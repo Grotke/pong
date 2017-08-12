@@ -8,7 +8,14 @@ public:
 	Collider();
 	virtual ~Collider();
 
-	virtual bool collidesWith(const BoxCollider& other) const { return true; }
-	virtual bool collidesWith(const CircleCollider& other) const { return true; }
+	struct Contact
+	{
+		Contact(int axis, float pen) : lastAxisOfReflection(axis), penetration(pen) {}
+		int lastAxisOfReflection;
+		float penetration;
+	};
+
+	virtual float collidesWith(const BoxCollider& other) const { return true; }
+	virtual Contact collidesWith(const CircleCollider& other) const { return Contact(0,0); }
 };
 

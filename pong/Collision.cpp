@@ -15,25 +15,23 @@ Collision::~Collision()
 }
 
 
-Collision::Contact Collision::resolve(const CircleCollider& actor) const
+Collider::Contact Collision::resolve(const CircleCollider& actor) const
 {
 	for (auto other : colliders)
 	{
 		if ((Collider*)&actor != other)
 		{
-			if (other->collidesWith(actor))
+			auto contact  = other->collidesWith(actor);
+			if (contact.penetration)
 			{
-				return Contact(1.f);
-				//Calculate interpenetration
-				//Calculate whatever else is needed
-				//Read physics book about collision detection
+				return contact;
 			}
 		}
 	}
-	return Contact(0.f);
+	return Collider::Contact(0,0);
 }
 
-Collision::Contact Collision::resolve(const BoxCollider& actor) const
+float Collision::resolve(const BoxCollider& actor) const
 {
 	for (auto other : colliders)
 	{
@@ -41,13 +39,16 @@ Collision::Contact Collision::resolve(const BoxCollider& actor) const
 		{
 			if (other->collidesWith(actor))
 			{
-				std::cout << "Collision Made!" << std::endl;
-				return Contact(1.f);
+				float value = other->collidesWith(actor);
+				if (value)
+				{
+					return value;
+				}
 				//Calculate interpenetration
 				//Calculate whatever else is needed
 				//Read physics book about collision detection
 			}
 		}
 	}
-	return Contact(0.f);
+	return 0.f;
 }

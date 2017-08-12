@@ -46,9 +46,18 @@ void Ball::update(float secondsPassed, const Collision& c, const CircleCollider&
 {
 	sprite.move(direction * (speedInPixelsPerSec * secondsPassed));
 	auto output = c.resolve(b);
-	if (output.interpenetration == 1)
+	if (output.penetration)
 	{
 		sprite.setFillColor(sf::Color::Green);
+		sprite.move(-direction*output.penetration);
+		if (output.lastAxisOfReflection)
+		{
+			direction.x = direction.x * -1;
+		}
+		else
+		{
+			direction.y = direction.y * -1;
+		}
 	}
 	else {
 		sprite.setFillColor(sf::Color::White);
