@@ -146,22 +146,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="CircleCollider.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="pong.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="ScoreKeeper.cpp" />
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="CircleCollider.h" />
+    <ClInclude Include="Collider.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PlayerController.h" />
+    <ClInclude Include="ScoreKeeper.h" />
     <ClInclude Include="Vectors.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>

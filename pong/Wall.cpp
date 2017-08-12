@@ -5,7 +5,10 @@
 
 Wall::Wall(int x, int y):x(x), y(y)
 {
-	sprite = sf::RectangleShape(sf::Vector2f(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT / 20));
+	float width = Config::SCREEN_WIDTH;
+	float height = Config::SCREEN_HEIGHT;
+	sprite = sf::RectangleShape(sf::Vector2f(width, height / 20));
+	sprite.setOrigin(width / 2, height / 40);
 	sprite.setFillColor(sf::Color::White);
 	sprite.setPosition(x, y);
 

@@ -1,9 +1,10 @@
 #pragma once
 #include "GameObject.h"
 #include "Config.h"
+#include "BoxCollider.h"
 #include "Controller.h"
 #include <SFML/Graphics.hpp>
-
+#include "Collision.h"
 class Paddle:
 	public GameObject
 {
@@ -11,12 +12,13 @@ class Paddle:
 		Paddle(int x, int y, Controller& control);
 		virtual ~Paddle();
 
-		sf::RectangleShape getSprite();
+
+		sf::RectangleShape& getSprite();
 		void enableMoveUp();
 		void disableMoveUp();
 		void enableMoveDown();
 		void disableMoveDown();
-		void update(float secondsPassed);
+		void update(float secondsPassed, const Collision& c, const BoxCollider& b);
 		void reset();
 
 	private:

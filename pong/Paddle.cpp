@@ -1,12 +1,17 @@
 #include "Paddle.h"
+#include "BoxCollider.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 
 
 Paddle::Paddle(int x, int y, Controller& control)
 	: x(x), y(y), controller(control)
 {
-	sprite = sf::RectangleShape(sf::Vector2f(DEFAULT_RECT_WIDTH, DEFAULT_RECT_HEIGHT));
+	float width = DEFAULT_RECT_WIDTH;
+	float height = DEFAULT_RECT_HEIGHT;
+	sprite = sf::RectangleShape(sf::Vector2f(width, height));
+	sprite.setOrigin(width / 2, height / 2);
 	sprite.setFillColor(sf::Color::White);
 	sprite.setPosition(x, y);
 	controller.attachParent(this);
@@ -22,7 +27,7 @@ void Paddle::reset()
 	sprite.setPosition(x, y);
 }
 
-sf::RectangleShape Paddle::getSprite() 
+sf::RectangleShape& Paddle::getSprite() 
 {
 	return sprite;
 }
@@ -47,15 +52,36 @@ void Paddle::disableMoveDown()
 	moveDown = false;
 }
 
-void Paddle::update(float secondsPassed)
+void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& b)
 {
 	if (moveUp)
 	{
 		sprite.move(0, -secondsPassed*speedInPixelsPerSec);
+		auto output = c.resolve(b);
+		if (output)
+		{
+			sprite.setFillColor(sf::Color::Green);
+			sprite.move(0, output);
+		}
+		else
+		{
+			sprite.setFillColor(sf::Color::White);
+		}
 	}
 	if (moveDown)
 	{
 		sprite.move(0, secondsPassed*speedInPixelsPerSec);
+		auto output = c.resolve(b);
+		if (output)
+		{
+			sprite.setFillColor(sf::Color::Green);
+			sprite.move(0, -output);
+
+		}
+		else
+		{
+			sprite.setFillColor(sf::Color::White);
+		}
 	}
 }
 
