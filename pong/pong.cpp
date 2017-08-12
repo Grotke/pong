@@ -4,7 +4,12 @@
 #include "Paddle.h"
 #include "Ball.h"
 #include "Wall.h"
+#include "Collider.h"
+#include "CircleCollider.h"
+#include "BoxCollider.h"
 #include "PlayerController.h"
+#include "Collision.h"
+#include <array>
 void constructDottedLine(sf::VertexArray&, int, int);
 
 int main() 
@@ -18,6 +23,15 @@ int main()
 		Ball ball = Ball(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2);
 		Wall topWall = Wall(Config::SCREEN_WIDTH/2, 0);
 		Wall bottomWall = Wall(Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT);
+		BoxCollider b1(player1.getSprite());
+		BoxCollider b2(player2.getSprite());
+		BoxCollider w1(topWall.getSprite());
+		BoxCollider w2(bottomWall.getSprite());
+		CircleCollider b3(ball.getSprite());
+
+		const std::array<const Collider const *, 5> colliders{ &b1, &b2, &w1, &w2, &b3 };
+		Collision c1(colliders);
+
 		sf::VertexArray lines(sf::Lines);
 		sf::Clock clock;
 
@@ -62,9 +76,9 @@ int main()
 			}
 
 			sf::Time current = clock.getElapsedTime();
-			player1.update(current.asSeconds());
-			player2.update(current.asSeconds());
-			ball.update(current.asSeconds());
+			player1.update(current.asSeconds(), c1, b1);
+			player2.update(current.asSeconds(), c1, b2);
+			ball.update(current.asSeconds(), c1, b3);
 			clock.restart();
 
 			window.clear(sf::Color::Black);

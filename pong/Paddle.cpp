@@ -1,5 +1,7 @@
 #include "Paddle.h"
+#include "BoxCollider.h"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 
 
@@ -25,7 +27,7 @@ void Paddle::reset()
 	sprite.setPosition(x, y);
 }
 
-sf::RectangleShape Paddle::getSprite() 
+sf::RectangleShape& Paddle::getSprite() 
 {
 	return sprite;
 }
@@ -50,15 +52,33 @@ void Paddle::disableMoveDown()
 	moveDown = false;
 }
 
-void Paddle::update(float secondsPassed)
+void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& b)
 {
 	if (moveUp)
 	{
 		sprite.move(0, -secondsPassed*speedInPixelsPerSec);
+		auto output = c.resolve(b);
+		if (output.interpenetration == 1)
+		{
+			sprite.setFillColor(sf::Color::Green);
+		}
+		else
+		{
+			sprite.setFillColor(sf::Color::White);
+		}
 	}
 	if (moveDown)
 	{
 		sprite.move(0, secondsPassed*speedInPixelsPerSec);
+		auto output = c.resolve(b);
+		if (output.interpenetration == 1)
+		{
+			sprite.setFillColor(sf::Color::Green);
+		}
+		else
+		{
+			sprite.setFillColor(sf::Color::White);
+		}
 	}
 }
 

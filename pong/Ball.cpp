@@ -25,7 +25,7 @@ void Ball::reset()
 	direction = chooseRandomDirection();
 }
 
-sf::CircleShape Ball::getSprite()
+sf::CircleShape& Ball::getSprite()
 {
 	return sprite;
 }
@@ -42,9 +42,17 @@ int Ball::chooseRandomSpeed()
 	return rand() % 400 + 100;
 }
 
-void Ball::update(float secondsPassed)
+void Ball::update(float secondsPassed, const Collision& c, const CircleCollider& b)
 {
 	sprite.move(direction * (speedInPixelsPerSec * secondsPassed));
+	auto output = c.resolve(b);
+	if (output.interpenetration == 1)
+	{
+		sprite.setFillColor(sf::Color::Green);
+	}
+	else {
+		sprite.setFillColor(sf::Color::White);
+	}
 }
 
 bool Ball::outOfBounds(const sf::Vector2u& screenSize)
