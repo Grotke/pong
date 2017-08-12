@@ -10,6 +10,7 @@
 #include "PlayerController.h"
 #include "Collision.h"
 #include <array>
+#include "ScoreKeeper.h"
 void constructDottedLine(sf::VertexArray&, int, int);
 
 int main() 
@@ -28,6 +29,28 @@ int main()
 		BoxCollider w1(topWall.getSprite());
 		BoxCollider w2(bottomWall.getSprite());
 		CircleCollider b3(ball.getSprite());
+		sf::Font font;
+		sf::Text player1Score;
+		sf::Text player2Score;
+		if (!font.loadFromFile("oswald.ttf"))
+		{
+			return 1;
+		}
+		player1Score.setFont(font);
+		player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
+		player1Score.setCharacterSize(48);
+		//text.setStyle(sf::Text::Bold);
+		player1Score.setPosition(Config::SCREEN_WIDTH / 2 - 40, 30);
+		player1Score.setFillColor(sf::Color::White);
+
+		player2Score.setFont(font);
+		player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
+		player2Score.setCharacterSize(48);
+		//text.setStyle(sf::Text::Bold);
+		player2Score.setFillColor(sf::Color::White);
+		player2Score.setPosition(Config::SCREEN_WIDTH / 2 + 20, 30);
+		ScoreKeeper::resetScores();
+
 
 		const std::array<const Collider const *, 5> colliders{ &b1, &b2, &w1, &w2, &b3 };
 		Collision c1(colliders);
@@ -63,6 +86,8 @@ int main()
 
 			if (ball.outOfBounds(window.getSize()))
 			{
+				player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
+				player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
 				player1.reset();
 				player2.reset();
 				ball.reset();
@@ -90,6 +115,8 @@ int main()
 			window.draw(ball.getSprite());
 			window.draw(topWall.getSprite());
 			window.draw(bottomWall.getSprite());
+			window.draw(player1Score);
+			window.draw(player2Score);
 
 
 			window.display();

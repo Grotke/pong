@@ -8,14 +8,6 @@ public:
 	Collision(const std::array<const Collider const *, 5>& colliders);
 	~Collision();
 
-
-	struct Contact
-	{
-		Contact(float in): interpenetration(in) {}
-		float interpenetration;
-
-	};
-
 	Collider::Contact resolve(const CircleCollider& collider) const;
 	float resolve(const BoxCollider& collider) const;
 private:

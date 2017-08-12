@@ -15,6 +15,7 @@ public:
 	void update(float secondsPassed, const Collision& c, const CircleCollider& b);
 	void reset();
 	bool outOfBounds(const sf::Vector2u& screenSize);
+	void incrementScore(int player) const;
 
 private:
 	sf::CircleShape sprite;

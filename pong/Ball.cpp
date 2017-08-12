@@ -1,5 +1,6 @@
 #include "Ball.h"
 #include "Vectors.h"
+#include "ScoreKeeper.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -69,7 +70,21 @@ bool Ball::outOfBounds(const sf::Vector2u& screenSize)
 	sf::Vector2f pos = sprite.getPosition();
 	if (pos.x > screenSize.x || pos.y > screenSize.y || pos.y < 0 || pos.x < 0)
 	{
+		if (pos.x < 0)
+		{
+			incrementScore(2);
+		}
+		if (pos.x > screenSize.x)
+		{
+			incrementScore(1);
+		}
 		return true;
 	}
 	return false;
+}
+
+void Ball::incrementScore(int player) const
+{
+
+	ScoreKeeper::incrementScore(player);
 }

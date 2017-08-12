@@ -28,6 +28,10 @@ Collider::Contact Collision::resolve(const CircleCollider& actor) const
 			}
 		}
 	}
+	//OUTLINE OF VELOCITY TRANSFER
+	//Velocity of paddle should transfer to velocity of ball
+	//Paddle (and maybe ball too) should have current velocity and max speed
+	//What happens when ball hits corner of paddle versus head on
 	return Collider::Contact(0,0);
 }
 
