@@ -49,6 +49,7 @@ void Ball::update(float secondsPassed, const Collision& c, const CircleCollider&
 	auto output = c.resolve(b);
 	if (output.penetration)
 	{
+		speedInPixelsPerSec += 20;
 		sprite.setFillColor(sf::Color::Green);
 		sprite.move(-direction*output.penetration);
 		if (output.lastAxisOfReflection)
