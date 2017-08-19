@@ -86,8 +86,48 @@ int main()
 
 			if (ball.outOfBounds(window.getSize()))
 			{
+				//sf::sleep(sf::seconds(0.5f));
+				sf::Time firstPause = clock.getElapsedTime();
+				sf::Time lastPause = firstPause;
+				while ((clock.getElapsedTime() - firstPause) < sf::seconds(0.5f))
+				{
+					ball.update(lastPause.asSeconds(), c1, b3);
+					lastPause = clock.getElapsedTime() - lastPause;
+
+					window.clear(sf::Color::Black);
+
+					constructDottedLine(lines, 5, 20);
+					window.draw(lines);
+					window.draw(player1.getSprite());
+					window.draw(player2.getSprite());
+					window.draw(ball.getSprite());
+					window.draw(topWall.getSprite());
+					window.draw(bottomWall.getSprite());
+					window.draw(player1Score);
+					window.draw(player2Score);
+
+					window.display();
+				}
 				player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
 				player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
+
+				while (clock.getElapsedTime() - firstPause < sf::seconds(2.0f))
+				{
+					window.clear(sf::Color::Black);
+					constructDottedLine(lines, 5, 20);
+					window.draw(lines);
+					window.draw(player1.getSprite());
+					window.draw(player2.getSprite());
+					window.draw(ball.getSprite());
+					window.draw(topWall.getSprite());
+					window.draw(bottomWall.getSprite());
+					window.draw(player1Score);
+					window.draw(player2Score);
+
+					window.display();
+				}
+
+
 				player1.reset();
 				player2.reset();
 				ball.reset();
