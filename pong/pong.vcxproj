@@ -157,6 +157,7 @@
     <ClCompile Include="pong.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ScoreKeeper.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
@@ -172,6 +173,7 @@
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="ScoreKeeper.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Vectors.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>

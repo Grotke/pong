@@ -1,12 +1,13 @@
 #pragma once
 #include "Collider.h"
 #include <SFML/Graphics.hpp>
+#include <string>
 
 class BoxCollider :
 	public Collider
 {
 public:
-	BoxCollider(sf::RectangleShape& sprite);
+	BoxCollider(sf::RectangleShape& sprite, std::string type);
 	virtual ~BoxCollider();
 
 	virtual float collidesWith(const BoxCollider& other) const override;
@@ -18,10 +19,13 @@ public:
 	float getHalfLengthX() const;
 	float getCenterX() const;
 	float getCenterY() const;
+	const std::string getType() const;
+
 
 private:
 	sf::RectangleShape& sprite;
 	int lastAxisOfReflection;
+	std::string type;
 	
 };
 

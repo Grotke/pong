@@ -1,11 +1,12 @@
 #pragma once
 #include "Collider.h"
 #include <SFML/Graphics.hpp>
+#include <string>
 class CircleCollider :
 	public Collider
 {
 public:
-	CircleCollider(sf::CircleShape& sprite);
+	CircleCollider(sf::CircleShape& sprite, std::string type);
 	virtual ~CircleCollider();
 
 	virtual float collidesWith(const BoxCollider& other) const override;
@@ -17,8 +18,10 @@ public:
 	float getHalfLengthX() const;
 	float getCenterX() const;
 	float getCenterY() const;
+	const std::string getType() const;
 
 private:
 	sf::CircleShape& sprite;
+	std::string type;
 };
 

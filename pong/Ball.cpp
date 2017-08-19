@@ -1,9 +1,9 @@
 #include "Ball.h"
 #include "Vectors.h"
 #include "ScoreKeeper.h"
-
+#include "SoundManager.h"
 #include <SFML/Graphics.hpp>
-
+#include <SFML/Audio.hpp>
 Ball::Ball(int x, int y):x(x), y(y)
 {
 	sprite = sf::CircleShape(radius);
@@ -49,6 +49,14 @@ void Ball::update(float secondsPassed, const Collision& c, const CircleCollider&
 	auto output = c.resolve(b);
 	if (output.penetration)
 	{
+		if (output.objectType == "Wall")
+		{
+			SoundManager::playHitWall();
+		}
+		else
+		{
+			SoundManager::playHitPaddle();
+		}
 		speedInPixelsPerSec += 20;
 		sprite.setFillColor(sf::Color::Green);
 		sprite.move(-direction*output.penetration);
@@ -71,6 +79,7 @@ bool Ball::outOfBounds(const sf::Vector2u& screenSize)
 	sf::Vector2f pos = sprite.getPosition();
 	if (pos.x > screenSize.x || pos.y > screenSize.y || pos.y < 0 || pos.x < 0)
 	{
+		SoundManager::playBallScored();
 		if (pos.x < 0)
 		{
 			incrementScore(2);

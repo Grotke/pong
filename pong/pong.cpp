@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include "Config.h"
 #include "Paddle.h"
@@ -11,6 +12,7 @@
 #include "Collision.h"
 #include <array>
 #include "ScoreKeeper.h"
+#include "SoundManager.h"
 void constructDottedLine(sf::VertexArray&, int, int);
 
 int main() 
@@ -24,11 +26,11 @@ int main()
 		Ball ball = Ball(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2);
 		Wall topWall = Wall(Config::SCREEN_WIDTH/2, 0);
 		Wall bottomWall = Wall(Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT);
-		BoxCollider b1(player1.getSprite());
-		BoxCollider b2(player2.getSprite());
-		BoxCollider w1(topWall.getSprite());
-		BoxCollider w2(bottomWall.getSprite());
-		CircleCollider b3(ball.getSprite());
+		BoxCollider b1(player1.getSprite(), "Paddle");
+		BoxCollider b2(player2.getSprite(), "Paddle");
+		BoxCollider w1(topWall.getSprite(), "Wall");
+		BoxCollider w2(bottomWall.getSprite(), "Wall");
+		CircleCollider b3(ball.getSprite(), "Ball");
 		sf::Font font;
 		sf::Text player1Score;
 		sf::Text player2Score;
@@ -57,7 +59,10 @@ int main()
 
 		sf::VertexArray lines(sf::Lines);
 		sf::Clock clock;
-
+		if (!SoundManager::initialize())
+		{
+			return -1;
+		}
 		while (window.isOpen())
 		{
 			bool restart = false;
@@ -110,6 +115,7 @@ int main()
 				}
 				player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
 				player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
+				SoundManager::playScoreIncrease();
 
 				while (clock.getElapsedTime() - firstPause < sf::seconds(2.0f))
 				{
