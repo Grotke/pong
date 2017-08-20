@@ -26,6 +26,16 @@ void Ball::reset()
 	direction = chooseRandomDirection();
 }
 
+const sf::Vector2f& Ball::getPosition() const
+{
+	return sprite.getPosition();
+}
+
+const sf::Vector2f& Ball::getDirection() const
+{
+	return direction;
+}
+
 sf::CircleShape& Ball::getSprite()
 {
 	return sprite;

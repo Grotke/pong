@@ -13,6 +13,7 @@
 #include <array>
 #include "ScoreKeeper.h"
 #include "SoundManager.h"
+#include "AIController.h"
 void constructDottedLine(sf::VertexArray&, int, int);
 
 int main() 
@@ -21,9 +22,13 @@ int main()
 
 		PlayerController p1 = PlayerController(sf::Keyboard::W, sf::Keyboard::S);
 		PlayerController p2 = PlayerController(sf::Keyboard::Up, sf::Keyboard::Down);
-		Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, p1);
-		Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, p2);
 		Ball ball = Ball(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2);
+		AIController a1 = AIController(ball);
+		AIController a2 = AIController(ball);
+		Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, a1);
+		Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, a2);
+		//Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, p1);
+		//Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, p2);
 		Wall topWall = Wall(Config::SCREEN_WIDTH/2, 0);
 		Wall bottomWall = Wall(Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT);
 		BoxCollider b1(player1.getSprite(), "Paddle");
@@ -145,10 +150,11 @@ int main()
 			{
 				continue;
 			}
-
 			sf::Time current = clock.getElapsedTime();
 			player1.update(current.asSeconds(), c1, b1);
 			player2.update(current.asSeconds(), c1, b2);
+			a2.update();
+			a1.update();
 			ball.update(current.asSeconds(), c1, b3);
 			clock.restart();
 

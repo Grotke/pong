@@ -27,6 +27,11 @@ void Paddle::reset()
 	sprite.setPosition(x, y);
 }
 
+const sf::Vector2f& Paddle::getPosition() const
+{
+	return sprite.getPosition();
+}
+
 sf::RectangleShape& Paddle::getSprite() 
 {
 	return sprite;
@@ -50,6 +55,11 @@ void Paddle::disableMoveUp()
 void Paddle::disableMoveDown()
 {
 	moveDown = false;
+}
+
+int Paddle::getStartY() const
+{
+	return y;
 }
 
 void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& b)

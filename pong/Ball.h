@@ -16,6 +16,8 @@ public:
 	void reset();
 	bool outOfBounds(const sf::Vector2u& screenSize);
 	void incrementScore(int player) const;
+	const sf::Vector2f& getPosition() const;
+	const sf::Vector2f& getDirection() const;
 
 private:
 	sf::CircleShape sprite;
