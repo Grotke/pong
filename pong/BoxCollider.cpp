@@ -5,8 +5,8 @@
 
 
 
-BoxCollider::BoxCollider(sf::RectangleShape& sprite)
-	:sprite(sprite)
+BoxCollider::BoxCollider(sf::RectangleShape& sprite, std::string type)
+	:sprite(sprite), type(type)
 {
 }
 
@@ -45,17 +45,17 @@ Collider::Contact BoxCollider::collidesWith(const CircleCollider& other) const
 
 	if (overlapX < 0 || overlapY < 0)
 	{
-		return Contact(0, 0);
+		return Contact(0, 0, type);
 	}
 	else
 	{
 		if (overlapX < overlapY)
 		{
-			return Contact(1, overlapX);
+			return Contact(1, overlapX, type);
 		}
 		else
 		{
-			return Contact(0, overlapY);
+			return Contact(0, overlapY, type);
 		}
 	}
 }
@@ -95,5 +95,10 @@ float BoxCollider::getHalfLengthX() const
 float BoxCollider::getHalfLengthY() const
 {
 	return sprite.getSize().y/2;
+}
+
+const std::string BoxCollider::getType() const
+{
+	return type;
 }
 

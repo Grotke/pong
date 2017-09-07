@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIController.cpp" />
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="CircleCollider.cpp" />
@@ -157,10 +158,12 @@
     <ClCompile Include="pong.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="ScoreKeeper.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Vectors.cpp" />
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIController.h" />
     <ClInclude Include="Ball.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="CircleCollider.h" />
@@ -172,6 +175,7 @@
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="ScoreKeeper.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Vectors.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>

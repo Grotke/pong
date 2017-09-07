@@ -4,8 +4,8 @@
 
 
 
-CircleCollider::CircleCollider(sf::CircleShape& sprite)
-	:sprite(sprite)
+CircleCollider::CircleCollider(sf::CircleShape& sprite, std::string type)
+	:sprite(sprite), type(type)
 {
 }
 
@@ -44,11 +44,11 @@ Collider::Contact CircleCollider::collidesWith(const CircleCollider& other) cons
 
 	if (overlapX < 0 || overlapY < 0)
 	{
-		return Contact(0,0);
+		return Contact(0,0, type);
 	}
 	else
 	{
-		return Contact(0, std::min(overlapX, overlapY));
+		return Contact(0, std::min(overlapX, overlapY), type);
 	}
 }
 
@@ -90,5 +90,11 @@ float CircleCollider::getHalfLengthY() const
 {
 	return sprite.getRadius();
 }
+
+const std::string CircleCollider::getType() const
+{
+	return type;
+}
+
 
 

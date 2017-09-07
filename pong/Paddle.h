@@ -20,6 +20,8 @@ class Paddle:
 		void disableMoveDown();
 		void update(float secondsPassed, const Collision& c, const BoxCollider& b);
 		void reset();
+		int getStartY() const;
+		const sf::Vector2f& getPosition() const;
 
 	private:
 		sf::RectangleShape sprite;
