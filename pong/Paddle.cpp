@@ -64,9 +64,14 @@ int Paddle::getStartY() const
 
 void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& b)
 {
+	if (!(moveUp || moveDown))
+	{
+		currentSpeed = 0;
+	}
 	if (moveUp)
 	{
-		sprite.move(0, -secondsPassed*speedInPixelsPerSec);
+		currentSpeed = calculateNewSpeed(secondsPassed);
+		sprite.move(0, -secondsPassed*currentSpeed);
 		auto output = c.resolve(b);
 		if (output)
 		{
@@ -80,7 +85,8 @@ void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& 
 	}
 	if (moveDown)
 	{
-		sprite.move(0, secondsPassed*speedInPixelsPerSec);
+		currentSpeed = calculateNewSpeed(secondsPassed);
+		sprite.move(0, secondsPassed*currentSpeed);
 		auto output = c.resolve(b);
 		if (output)
 		{
@@ -93,6 +99,17 @@ void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& 
 			sprite.setFillColor(sf::Color::White);
 		}
 	}
+}
+
+float Paddle::calculateNewSpeed(float secondsPassed)
+{
+	float newSpeed = (acceleration * secondsPassed) + currentSpeed;
+	if (newSpeed > speedInPixelsPerSec)
+	{
+		newSpeed = speedInPixelsPerSec;
+	}
+	return speedInPixelsPerSec;
+	//return newSpeed;
 }
 
 

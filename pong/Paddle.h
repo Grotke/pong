@@ -24,8 +24,11 @@ class Paddle:
 		const sf::Vector2f& getPosition() const;
 
 	private:
+		float calculateNewSpeed(float secondsPassed);
 		sf::RectangleShape sprite;
-		float speedInPixelsPerSec = 1000.f;
+		float speedInPixelsPerSec = 20.f;
+		float acceleration = speedInPixelsPerSec;
+		float currentSpeed = 0.f;
 		bool moveUp = false;
 		bool moveDown = false;
 		int x;

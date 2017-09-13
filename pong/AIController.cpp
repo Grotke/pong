@@ -1,8 +1,10 @@
 #include "AIController.h"
 #include "Vectors.h"
 #include "Paddle.h"
+#include <cmath>
 
-AIController::AIController(const Ball& ball): ball(ball)
+AIController::AIController(const Ball& ball, float tickRate): 
+	ball(ball), timePassedSinceUpdate(0), AITickRate(tickRate)
 {
 }
 
@@ -15,22 +17,28 @@ void AIController::processEvent(sf::Event& event)
 {
 }
 
-void AIController::update()
+void AIController::update(float secondsPassed)
 {
 	if (!parent)
 	{
 		return;
 	}
-	desiredYPosition = updateDesiredYPosition();
+	timePassedSinceUpdate += secondsPassed;
+	if (timePassedSinceUpdate >= AITickRate)
+	{
+		desiredYPosition = updateDesiredYPosition();
+		timePassedSinceUpdate = 0;
+	}
 	int currentPosition = parent->getPosition().y;
-	if (currentPosition == desiredYPosition)
+	int fudgeFactor = 50;
+	if (std::abs(currentPosition - desiredYPosition) <= fudgeFactor)
 	{
 		parent->disableMoveDown();
 		parent->disableMoveUp();
 	}
-	else
-	{
-		if (desiredYPosition < currentPosition)
+
+		//float fudgeFactor = 20.f;
+		else if (desiredYPosition < currentPosition)
 		{
 			parent->disableMoveDown();
 			parent->enableMoveUp();
@@ -40,7 +48,7 @@ void AIController::update()
 			parent->disableMoveUp();
 			parent->enableMoveDown();
 		}
-	}
+	//}
 }
 
 int AIController::updateDesiredYPosition()
@@ -57,6 +65,10 @@ int AIController::updateDesiredYPosition()
 
 bool AIController::ballIsHeadingTowardsMe()
 {
+	if (!parent)
+	{
+		return false;
+	}
 	sf::Vector2f& paddleToBall = ball.getPosition() - parent->getPosition();
 	float result = Vectors::dot(paddleToBall, ball.getDirection());
 	if (result >= 0)
