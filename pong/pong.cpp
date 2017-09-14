@@ -23,8 +23,9 @@ int main()
 		PlayerController p1 = PlayerController(sf::Keyboard::W, sf::Keyboard::S);
 		PlayerController p2 = PlayerController(sf::Keyboard::Up, sf::Keyboard::Down);
 		Ball ball = Ball(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2);
-		AIController a1 = AIController(ball);
-		AIController a2 = AIController(ball);
+		float tickRate = 0.f;
+		AIController a1 = AIController(ball, tickRate);
+		AIController a2 = AIController(ball, tickRate);
 		Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, a1);
 		Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, a2);
 		//Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, p1);
@@ -153,8 +154,8 @@ int main()
 			sf::Time current = clock.getElapsedTime();
 			player1.update(current.asSeconds(), c1, b1);
 			player2.update(current.asSeconds(), c1, b2);
-			a2.update();
-			a1.update();
+			a2.update(current.asSeconds());
+			a1.update(current.asSeconds());
 			ball.update(current.asSeconds(), c1, b3);
 			clock.restart();
 
