@@ -1,25 +1,19 @@
 #include "Wall.h"
 #include "Config.h"
 #include <SFML/Graphics.hpp>
+#include "ComponentManager.h"
 
 
-Wall::Wall(int x, int y):x(x), y(y)
+Wall::Wall(float x, float y): GameObject("Wall")
 {
 	float width = Config::SCREEN_WIDTH;
-	float height = Config::SCREEN_HEIGHT;
-	sprite = sf::RectangleShape(sf::Vector2f(width, height / 20));
-	sprite.setOrigin(width / 2, height / 40);
-	sprite.setFillColor(sf::Color::White);
-	sprite.setPosition(x, y);
-
+	float height = Config::SCREEN_HEIGHT /20;
+	ComponentManager::addTransformTo(*this, sf::Vector2f(x, y), height, width);
+	ComponentManager::addGraphicTo(*this, false);
+	ComponentManager::addColliderTo(*this);
 }
 
 
 Wall::~Wall()
 {
-}
-
-sf::RectangleShape Wall::getSprite()
-{
-	return sprite;
 }

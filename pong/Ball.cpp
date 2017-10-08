@@ -4,14 +4,16 @@
 #include "SoundManager.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-Ball::Ball(int x, int y):x(x), y(y)
+#include "ComponentManager.h"
+Ball::Ball(float x, float y, float radius, float topSpeed): GameObject("Ball")
 {
-	sprite = sf::CircleShape(radius);
-	sprite.setOrigin(radius, radius);
-	sprite.setPosition(x, y);
-	sprite.setFillColor(sf::Color::White);
-	speedInPixelsPerSec = chooseRandomSpeed();
-	direction = chooseRandomDirection();
+	float speedInPixelsPerSec = chooseRandomSpeed();
+	sf::Vector2f initDirection = chooseRandomDirection();
+	ComponentManager::addTransformTo(*this, sf::Vector2f(x, y), radius * 2, radius * 2);
+	ComponentManager::addGraphicTo(*this, true);
+	ComponentManager::addColliderTo(*this);
+	ComponentManager::addMovementTo(*this, initDirection, speedInPixelsPerSec, topSpeed, true);
+	ComponentManager::addAudioTo(*this);
 }
 
 
@@ -21,24 +23,11 @@ Ball::~Ball()
 
 void Ball::reset()
 {
-	sprite.setPosition(x, y);
-	speedInPixelsPerSec = chooseRandomSpeed();
-	direction = chooseRandomDirection();
-}
-
-const sf::Vector2f& Ball::getPosition() const
-{
-	return sprite.getPosition();
-}
-
-const sf::Vector2f& Ball::getDirection() const
-{
-	return direction;
-}
-
-sf::CircleShape& Ball::getSprite()
-{
-	return sprite;
+	float speedInPixelsPerSec = chooseRandomSpeed();
+	sf::Vector2f initDirection = chooseRandomDirection();
+	ComponentManager::getTransformByParent(*this).reset();
+	ComponentManager::getMovementByParent(*this).setMoveDirection(initDirection);
+	ComponentManager::getMovementByParent(*this).setCurrentSpeed(speedInPixelsPerSec);
 }
 
 sf::Vector2f Ball::chooseRandomDirection()
@@ -48,59 +37,9 @@ sf::Vector2f Ball::chooseRandomDirection()
 	return Vectors::normalize(sf::Vector2f(randomX, randomY));
 }
 
-int Ball::chooseRandomSpeed()
+float Ball::chooseRandomSpeed()
 {
 	return rand() % 400 + 100;
-}
-
-void Ball::update(float secondsPassed, const Collision& c, const CircleCollider& b)
-{
-	sprite.move(direction * (speedInPixelsPerSec * secondsPassed));
-	auto output = c.resolve(b);
-	if (output.penetration)
-	{
-		if (output.objectType == "Wall")
-		{
-			SoundManager::playHitWall();
-		}
-		else
-		{
-			SoundManager::playHitPaddle();
-		}
-		speedInPixelsPerSec += 20;
-		sprite.setFillColor(sf::Color::Green);
-		sprite.move(-direction*output.penetration);
-		if (output.lastAxisOfReflection)
-		{
-			direction.x = direction.x * -1;
-		}
-		else
-		{
-			direction.y = direction.y * -1;
-		}
-	}
-	else {
-		sprite.setFillColor(sf::Color::White);
-	}
-}
-
-bool Ball::outOfBounds(const sf::Vector2u& screenSize)
-{
-	sf::Vector2f pos = sprite.getPosition();
-	if (pos.x > screenSize.x || pos.y > screenSize.y || pos.y < 0 || pos.x < 0)
-	{
-		SoundManager::playBallScored();
-		if (pos.x < 0)
-		{
-			incrementScore(2);
-		}
-		if (pos.x > screenSize.x)
-		{
-			incrementScore(1);
-		}
-		return true;
-	}
-	return false;
 }
 
 void Ball::incrementScore(int player) const

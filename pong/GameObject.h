@@ -1,10 +1,14 @@
 #pragma once
-#include "Collider.h"
+#include <string>
 
 class GameObject
 {
 public:
-	GameObject();
+	GameObject(const std::string& type);
 	virtual ~GameObject();
+	const std::string& getType() const;
+	virtual void reset() {}
 
+protected:
+	const std::string type;
 };

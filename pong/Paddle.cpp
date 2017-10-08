@@ -1,20 +1,34 @@
 #include "Paddle.h"
-#include "BoxCollider.h"
+#include "Config.h"
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include "ComponentManager.h"
 
 
 
-Paddle::Paddle(int x, int y, Controller& control)
-	: x(x), y(y), controller(control)
+Paddle::Paddle(float x, float y, float speedInPixelsPerSecond, const std::string& controlType, const Ball& ball)
+	: GameObject("Paddle")
 {
-	float width = DEFAULT_RECT_WIDTH;
-	float height = DEFAULT_RECT_HEIGHT;
-	sprite = sf::RectangleShape(sf::Vector2f(width, height));
-	sprite.setOrigin(width / 2, height / 2);
-	sprite.setFillColor(sf::Color::White);
-	sprite.setPosition(x, y);
-	controller.attachParent(this);
+	ComponentManager::addTransformTo(*this, sf::Vector2f(x, y), DEFAULT_RECT_HEIGHT, DEFAULT_RECT_WIDTH);
+	ComponentManager::addColliderTo(*this);
+	ComponentManager::addMovementTo(*this, sf::Vector2f(0.f, 0.f), speedInPixelsPerSecond, speedInPixelsPerSecond, false);
+	ComponentManager::addGraphicTo(*this, false);
+
+	if (controlType == "P1")
+	{
+		ComponentManager::addPlayerTo(*this, Config::P1_UP, Config::P1_DOWN);
+	}
+	else if (controlType == "P2")
+	{
+		ComponentManager::addPlayerTo(*this, Config::P2_UP, Config::P2_DOWN);
+	}
+	else if (controlType == "AI")
+	{
+		ComponentManager::addAITo(*this, ball);
+	}
+	else {
+
+	}
+	//Find where to put AI or player component
 }
 
 
@@ -24,92 +38,8 @@ Paddle::~Paddle()
 
 void Paddle::reset()
 {
-	sprite.setPosition(x, y);
-}
-
-const sf::Vector2f& Paddle::getPosition() const
-{
-	return sprite.getPosition();
-}
-
-sf::RectangleShape& Paddle::getSprite() 
-{
-	return sprite;
-}
-
-void Paddle::enableMoveUp()
-{
-	moveUp = true;
-}
-
-void Paddle::enableMoveDown()
-{
-	moveDown = true;
-}
-
-void Paddle::disableMoveUp()
-{
-	moveUp = false;
-}
-
-void Paddle::disableMoveDown()
-{
-	moveDown = false;
-}
-
-int Paddle::getStartY() const
-{
-	return y;
-}
-
-void Paddle::update(float secondsPassed, const Collision& c, const BoxCollider& b)
-{
-	if (!(moveUp || moveDown))
-	{
-		currentSpeed = 0;
-	}
-	if (moveUp)
-	{
-		currentSpeed = calculateNewSpeed(secondsPassed);
-		sprite.move(0, -secondsPassed*currentSpeed);
-		auto output = c.resolve(b);
-		if (output)
-		{
-			sprite.setFillColor(sf::Color::Green);
-			sprite.move(0, output);
-		}
-		else
-		{
-			sprite.setFillColor(sf::Color::White);
-		}
-	}
-	if (moveDown)
-	{
-		currentSpeed = calculateNewSpeed(secondsPassed);
-		sprite.move(0, secondsPassed*currentSpeed);
-		auto output = c.resolve(b);
-		if (output)
-		{
-			sprite.setFillColor(sf::Color::Green);
-			sprite.move(0, -output);
-
-		}
-		else
-		{
-			sprite.setFillColor(sf::Color::White);
-		}
-	}
-}
-
-float Paddle::calculateNewSpeed(float secondsPassed)
-{
-	float newSpeed = (acceleration * secondsPassed) + currentSpeed;
-	if (newSpeed > speedInPixelsPerSec)
-	{
-		newSpeed = speedInPixelsPerSec;
-	}
-	return speedInPixelsPerSec;
-	//return newSpeed;
+	ComponentManager::getTransformByParent(*this).reset();
+	ComponentManager::getMovementByParent(*this).reset();
 }
 
 

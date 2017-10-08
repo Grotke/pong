@@ -6,15 +6,7 @@ class Wall:
 	public GameObject
 {
 public:
-	Wall(int x, int y);
+	Wall(float x, float y);
 	virtual ~Wall();
-
-	sf::RectangleShape getSprite();
-
-
-private:
-	int x;
-	int y;
-	sf::RectangleShape sprite;
 };
 

@@ -2,6 +2,7 @@
 
 int ScoreKeeper::p1Score = 0;
 int ScoreKeeper::p2Score = 0;
+bool ScoreKeeper::scoreMade = false;
 
 ScoreKeeper::ScoreKeeper()
 {
@@ -38,3 +39,14 @@ int ScoreKeeper::getPlayerScore(int player)
 	}
 	return p2Score;
 }
+
+bool ScoreKeeper::scoreWasMade()
+{
+	return scoreMade;
+}
+
+void ScoreKeeper::setScoreMade(bool scoreStatus)
+{
+	scoreMade = scoreStatus;
+}
+

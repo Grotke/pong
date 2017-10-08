@@ -5,63 +5,35 @@
 #include "Paddle.h"
 #include "Ball.h"
 #include "Wall.h"
-#include "Collider.h"
-#include "CircleCollider.h"
-#include "BoxCollider.h"
-#include "PlayerController.h"
-#include "Collision.h"
 #include <array>
 #include "ScoreKeeper.h"
 #include "SoundManager.h"
-#include "AIController.h"
+#include "ComponentManager.h"
+
 void constructDottedLine(sf::VertexArray&, int, int);
+void createGameObjects(std::vector<GameObject*>& objects);
+bool ballIsOutOfBounds(const sf::Vector2u& screenSize);
+void resetObjects(std::vector<GameObject*>& objects);
+void drawScreen(sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score);
+void score(sf::Text& player1Score, sf::Text& player2Score);
+int setUpScores(sf::Text& player1Score, sf::Text& player2Score, sf::Font& font);
+void runUpdates(float secondsPassed);
+void processEvents(sf::Event& event);
 
 int main() 
 {
 		sf::RenderWindow window(sf::VideoMode(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT), "Super Pong");
+		
+		std::vector<GameObject*> objects;
+		createGameObjects(objects);
 
-		PlayerController p1 = PlayerController(sf::Keyboard::W, sf::Keyboard::S);
-		PlayerController p2 = PlayerController(sf::Keyboard::Up, sf::Keyboard::Down);
-		Ball ball = Ball(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 2);
-		float tickRate = 0.f;
-		AIController a1 = AIController(ball, tickRate);
-		AIController a2 = AIController(ball, tickRate);
-		Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, a1);
-		Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, a2);
-		//Paddle player1 = Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, p1);
-		//Paddle player2 = Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, p2);
-		Wall topWall = Wall(Config::SCREEN_WIDTH/2, 0);
-		Wall bottomWall = Wall(Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT);
-		BoxCollider b1(player1.getSprite(), "Paddle");
-		BoxCollider b2(player2.getSprite(), "Paddle");
-		BoxCollider w1(topWall.getSprite(), "Wall");
-		BoxCollider w2(bottomWall.getSprite(), "Wall");
-		CircleCollider b3(ball.getSprite(), "Ball");
+		
+
 		sf::Font font;
 		sf::Text player1Score;
 		sf::Text player2Score;
-		if (!font.loadFromFile("oswald.ttf"))
-		{
-			return 1;
-		}
-		player1Score.setFont(font);
-		player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
-		player1Score.setCharacterSize(48);
-		//text.setStyle(sf::Text::Bold);
-		player1Score.setPosition(Config::SCREEN_WIDTH / 2 - 40, 30);
-		player1Score.setFillColor(sf::Color::White);
 
-		player2Score.setFont(font);
-		player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
-		player2Score.setCharacterSize(48);
-		//text.setStyle(sf::Text::Bold);
-		player2Score.setFillColor(sf::Color::White);
-		player2Score.setPosition(Config::SCREEN_WIDTH / 2 + 20, 30);
-		ScoreKeeper::resetScores();
-
-
-		const std::array<const Collider const *, 5> colliders{ &b1, &b2, &w1, &w2, &b3 };
-		Collision c1(colliders);
+		setUpScores(player1Score, player2Score, font);
 
 		sf::VertexArray lines(sf::Lines);
 		sf::Clock clock;
@@ -83,66 +55,37 @@ int main()
 				{
 					if (event.key.code == sf::Keyboard::R)
 					{
-						player1.reset();
-						player2.reset();
-						ball.reset();
+						resetObjects(objects);
 						clock.restart();
 						restart = true;
 						break;
 					}
 				}
-				p1.processEvent(event);
-				p2.processEvent(event);
+				processEvents(event);
 			}
 
-			if (ball.outOfBounds(window.getSize()))
+			if (ballIsOutOfBounds(window.getSize()))
 			{
-				//sf::sleep(sf::seconds(0.5f));
+				ScoreKeeper::setScoreMade(true);
 				sf::Time firstPause = clock.getElapsedTime();
 				sf::Time lastPause = firstPause;
 				while ((clock.getElapsedTime() - firstPause) < sf::seconds(0.5f))
 				{
-					ball.update(lastPause.asSeconds(), c1, b3);
+					runUpdates(lastPause.asSeconds());
 					lastPause = clock.getElapsedTime() - lastPause;
 
-					window.clear(sf::Color::Black);
-
-					constructDottedLine(lines, 5, 20);
-					window.draw(lines);
-					window.draw(player1.getSprite());
-					window.draw(player2.getSprite());
-					window.draw(ball.getSprite());
-					window.draw(topWall.getSprite());
-					window.draw(bottomWall.getSprite());
-					window.draw(player1Score);
-					window.draw(player2Score);
-
-					window.display();
+					drawScreen(window, lines, player1Score, player2Score);
 				}
-				player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
-				player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
-				SoundManager::playScoreIncrease();
+
+				score(player1Score, player2Score);
 
 				while (clock.getElapsedTime() - firstPause < sf::seconds(2.0f))
 				{
-					window.clear(sf::Color::Black);
-					constructDottedLine(lines, 5, 20);
-					window.draw(lines);
-					window.draw(player1.getSprite());
-					window.draw(player2.getSprite());
-					window.draw(ball.getSprite());
-					window.draw(topWall.getSprite());
-					window.draw(bottomWall.getSprite());
-					window.draw(player1Score);
-					window.draw(player2Score);
-
-					window.display();
+					drawScreen(window, lines, player1Score, player2Score);
 				}
 
-
-				player1.reset();
-				player2.reset();
-				ball.reset();
+				ScoreKeeper::setScoreMade(false);
+				resetObjects(objects);
 				clock.restart();
 				restart = true;
 			}
@@ -152,36 +95,50 @@ int main()
 				continue;
 			}
 			sf::Time current = clock.getElapsedTime();
-			player1.update(current.asSeconds(), c1, b1);
-			player2.update(current.asSeconds(), c1, b2);
-			a2.update(current.asSeconds());
-			a1.update(current.asSeconds());
-			ball.update(current.asSeconds(), c1, b3);
+			runUpdates(current.asSeconds());
 			clock.restart();
 
-			window.clear(sf::Color::Black);
-
-			constructDottedLine(lines, 5, 20);
-			window.draw(lines);
-			window.draw(player1.getSprite());
-			window.draw(player2.getSprite());
-			window.draw(ball.getSprite());
-			window.draw(topWall.getSprite());
-			window.draw(bottomWall.getSprite());
-			window.draw(player1Score);
-			window.draw(player2Score);
-
-
-			window.display();
+			drawScreen(window, lines, player1Score, player2Score);
 		}
 
 	return 0;
 }
 
+void processEvents(sf::Event& event)
+{
+	for (auto player : ComponentManager::getPlayers())
+	{
+		player.second->processEvent(event);
+	}
+}
+
+void runUpdates(float secondsPassed)
+{
+	for (auto player : ComponentManager::getPlayers())
+	{
+		player.second->update(secondsPassed);
+	}
+
+	for (auto ai : ComponentManager::getAIs())
+	{
+		ai.second->update(secondsPassed);
+	}
+
+	for (auto movement : ComponentManager::getMovements())
+	{
+		movement.second->update(secondsPassed);
+	}
+
+	for (auto audio : ComponentManager::getAudios())
+	{
+		audio.second->update(secondsPassed);
+	}
+}
+
 void constructDottedLine(sf::VertexArray& lines, int lineLength, int spacing)
 {
 	float middleOfScreen = Config::SCREEN_WIDTH / 2;
-	int currentHeight = 0;
+	float currentHeight = 0.f;
 	while (currentHeight < Config::SCREEN_HEIGHT)
 	{
 		currentHeight += spacing;
@@ -189,4 +146,96 @@ void constructDottedLine(sf::VertexArray& lines, int lineLength, int spacing)
 		lines.append(sf::Vector2f(middleOfScreen, lineLength + currentHeight));
 		currentHeight += lineLength;
 	}
+}
+
+int setUpScores(sf::Text& player1Score, sf::Text& player2Score, sf::Font& font)
+{
+	if (!font.loadFromFile("oswald.ttf"))
+	{
+		return 1;
+	}
+	player1Score.setFont(font);
+	player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
+	player1Score.setCharacterSize(48);
+	//text.setStyle(sf::Text::Bold);
+	player1Score.setPosition(Config::SCREEN_WIDTH / 2 - 40, 30);
+	player1Score.setFillColor(sf::Color::White);
+
+	player2Score.setFont(font);
+	player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
+	player2Score.setCharacterSize(48);
+	//text.setStyle(sf::Text::Bold);
+	player2Score.setFillColor(sf::Color::White);
+	player2Score.setPosition(Config::SCREEN_WIDTH / 2 + 20, 30);
+	ScoreKeeper::resetScores();
+	return 0;
+}
+
+void score(sf::Text& player1Score, sf::Text& player2Score)
+{
+	player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
+	player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
+	SoundManager::playScoreIncrease();
+}
+
+void drawScreen(sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score)
+{
+	window.clear(sf::Color::Black);
+	constructDottedLine(lines, 5, 20);
+
+	auto graphics = ComponentManager::getGraphics();
+	for (auto graphic : ComponentManager::getGraphics())
+	{
+		window.draw(graphic.second->getSprite());
+	}
+
+	window.draw(lines);
+	window.draw(player1Score);
+	window.draw(player2Score);
+	window.display();
+}
+
+void createGameObjects(std::vector<GameObject*>& objects)
+{
+	Ball* ball = new Ball(Config::SCREEN_WIDTH / 2.f, Config::SCREEN_HEIGHT / 2.f, 25.f, 300);
+	Paddle* player1 = new Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, 300.f, "P1", *ball);
+	Paddle* player2 = new Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, 300.f, "P2", *ball);
+	Wall* topWall = new Wall(Config::SCREEN_WIDTH / 2.f, 0.f);
+	Wall* botWall = new Wall(Config::SCREEN_WIDTH / 2.f, Config::SCREEN_HEIGHT);
+	objects.push_back(ball);
+	objects.push_back(player1);
+	objects.push_back(player2);
+	objects.push_back(topWall);
+	objects.push_back(botWall);
+}
+
+void resetObjects(std::vector<GameObject*>& objects)
+{
+	for (auto obj : objects)
+	{
+		obj->reset();
+	}
+}
+
+bool ballIsOutOfBounds(const sf::Vector2u& screenSize)
+{
+	for (auto transform : ComponentManager::getTransforms())
+	{
+		int result = transform.second->isOutOfBounds(screenSize);
+		if (result != 0 && ComponentManager::getParentById(transform.first).getType() == "Ball")
+		{
+			SoundManager::playBallScored();
+
+			if (result == 1)
+			{
+				ScoreKeeper::incrementScore(1);
+			}
+			else if (result == -1)
+			{
+				ScoreKeeper::incrementScore(2);
+			}
+			return true;
+		}
+	}
+	return false;
 }
