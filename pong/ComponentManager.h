@@ -43,6 +43,11 @@ class ComponentManager
 		static void addAITo(const GameObject& object, const Ball& ball);
 		static void addGraphicTo(const GameObject& object, bool isCircle);
 		static void addAudioTo(const GameObject& object);
+		
+		static void removeAIFrom(const GameObject& object);
+		static void removePlayerFrom(const GameObject& object);
+		static void removeControlComponents(const GameObject& object);
+
 
 	private:
 		static std::map<int, ColliderComponent *> colliders;

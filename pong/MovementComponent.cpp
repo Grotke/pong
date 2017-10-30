@@ -61,6 +61,7 @@ void MovementComponent::update(float secondsPassed)
 			{
 				moveDirection.y *= -1;
 			}
+			currentSpeed += 20.f;
 		}
 	}
 }

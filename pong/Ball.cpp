@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "ComponentManager.h"
+#include <iostream>
 Ball::Ball(float x, float y, float radius, float topSpeed): GameObject("Ball")
 {
 	float speedInPixelsPerSec = chooseRandomSpeed();
@@ -32,14 +33,14 @@ void Ball::reset()
 
 sf::Vector2f Ball::chooseRandomDirection()
 {
-	float randomX = static_cast<float> ((rand() % 200) - 100) / 100.f;
-	float randomY = static_cast<float> ((rand() % 200) - 100 ) / 100.f;
+	float randomX = static_cast<float> ((rand() % 200) - 100);
+	float randomY = static_cast<float> ((rand() % 200) - 100);
 	return Vectors::normalize(sf::Vector2f(randomX, randomY));
 }
 
 float Ball::chooseRandomSpeed()
 {
-	return rand() % 400 + 100;
+	return rand() % 400 + 200;
 }
 
 void Ball::incrementScore(int player) const
