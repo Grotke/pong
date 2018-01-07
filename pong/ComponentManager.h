@@ -1,12 +1,27 @@
 #pragma once
-#include "ColliderComponent.h"
-#include "GraphicComponent.h"
-#include "AIComponent.h"
-#include "PlayerComponent.h"
-#include "MovementComponent.h"
-#include "AudioComponent.h"
-#include "GameObject.h"
+
 #include <vector>
+
+#include "AIComponent.h"
+#include "AudioComponent.h"
+#include "ColliderComponent.h"
+#include "GameObject.h"
+#include "GraphicComponent.h"
+#include "MovementComponent.h"
+#include "PlayerComponent.h"
+
+/*This class manages the game's components,
+associating an object to its different components.
+
+You can immediately start adding components to an object 
+without prepopulating the object into the manager,
+but don't try to get a component without setting it since 
+it'd probably crash.
+
+This class looks more complex than it is since 
+most of these methods are just setters or getters for the different components.
+This class could probably be done better with templates.
+*/
 class ComponentManager
 {
 	public:
@@ -19,6 +34,10 @@ class ComponentManager
 		static const std::map<int, PlayerComponent *> getPlayers();
 		static const std::map<int, AIComponent *> getAIs();
 		static const std::map<int, AudioComponent *> getAudios();
+
+		/*Components must be added before they can be fetched
+		because these getters don't verify that a component exists
+		before trying to access them.*/
 		static TransformComponent& getTransformByParent(const GameObject& parent);
 		static ColliderComponent& getColliderByParent(const GameObject& parent);
 		static MovementComponent& getMovementByParent(const GameObject& parent);
@@ -47,7 +66,6 @@ class ComponentManager
 		static void removeAIFrom(const GameObject& object);
 		static void removePlayerFrom(const GameObject& object);
 		static void removeControlComponents(const GameObject& object);
-
 
 	private:
 		static std::map<int, ColliderComponent *> colliders;

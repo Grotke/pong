@@ -1,6 +1,10 @@
 #pragma once
+
 #include <SFML/Window.hpp>
 
+/*Stores config data such as:
+- starting screen width and height
+- player keybindings*/
 class Config
 {
 public:

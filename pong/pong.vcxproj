@@ -157,8 +157,8 @@
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
-    <ClCompile Include="Config.cpp" />
     <ClCompile Include="GraphicComponent.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
@@ -180,8 +180,10 @@
     <ClInclude Include="ComponentManager.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Contact.h" />
+    <ClInclude Include="ControlTypeConfig.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicComponent.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PlayerComponent.h" />

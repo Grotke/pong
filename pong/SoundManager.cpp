@@ -1,5 +1,6 @@
 #include "SoundManager.h"
 
+/*Define the data variables since declaration isn't enough.*/
 sf::Sound SoundManager::hitPaddleSound;
 sf::Sound SoundManager::hitWallSound;
 sf::Sound SoundManager::scoreIncreaseSound;
@@ -10,40 +11,28 @@ sf::SoundBuffer SoundManager::hitWallBuffer;
 sf::SoundBuffer SoundManager::scoreIncreaseBuffer;
 sf::SoundBuffer SoundManager::ballScoredBuffer;
 
-SoundManager::SoundManager()
-{
-}
-
-
-SoundManager::~SoundManager()
-{
-}
-
-
 void SoundManager::playHitPaddle()
 {
-
 	hitPaddleSound.play();
 }
 
 void SoundManager::playHitWall()
 {
-
 	hitWallSound.play();
 }
 
 void SoundManager::playScoreIncrease()
 {
-
 	scoreIncreaseSound.play();
 }
 
 void SoundManager::playBallScored()
 {
-
 	ballScoredSound.play();
 }
 
+/*Load hardcoded sound files and set buffers.
+Could be more flexible and robust.*/
 bool SoundManager::initialize()
 {
 	if (!hitPaddleBuffer.loadFromFile("sounds/hit_normal.wav")||

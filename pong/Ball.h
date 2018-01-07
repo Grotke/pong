@@ -1,6 +1,12 @@
 #pragma once
-#include "GameObject.h"
+
 #include <SFML/Graphics.hpp>
+
+#include "GameObject.h"
+
+/*Attaches components to the Ball.
+Initializes ball speed and direction to 
+pass to the Movement Component.*/
 class Ball: 
 	public GameObject
 {
@@ -8,13 +14,12 @@ public:
 	Ball(float x, float y, float radius, float topSpeed);
 	virtual ~Ball();
 
-	sf::Vector2f chooseRandomDirection();
-	float chooseRandomSpeed();
+	sf::Vector2f getRandomDirection() const;
+	float getRandomSpeed() const;
 	void reset();
-	void incrementScore(int player) const;
 
 private:
-	float radius = 25.f;
+	float radius;
 	float x;
 	float y;
 };

@@ -1,17 +1,12 @@
 #include "ScoreKeeper.h"
 
+/*Initialize scores here since 
+they can't be set in header unless they were const
+and can't be set in constructor 
+since the constructor is never called for this static class.*/
 int ScoreKeeper::p1Score = 0;
 int ScoreKeeper::p2Score = 0;
 bool ScoreKeeper::scoreMade = false;
-
-ScoreKeeper::ScoreKeeper()
-{
-}
-
-
-ScoreKeeper::~ScoreKeeper()
-{
-}
 
 void ScoreKeeper::incrementScore(int player)
 {
@@ -40,13 +35,15 @@ int ScoreKeeper::getPlayerScore(int player)
 	return p2Score;
 }
 
+/*Used by outside code to check if post-score 
+processing should be done.*/
 bool ScoreKeeper::scoreWasMade()
 {
 	return scoreMade;
 }
 
+/*scoreMade should be set and unset by outside code.*/
 void ScoreKeeper::setScoreMade(bool scoreStatus)
 {
 	scoreMade = scoreStatus;
 }
-

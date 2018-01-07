@@ -1,5 +1,9 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
+
+/*These are some helper vector methods 
+to do basic things SFML vectors can't do.*/
 class Vectors
 {
 public:

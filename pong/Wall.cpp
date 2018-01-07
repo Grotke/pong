@@ -1,9 +1,8 @@
-#include "Wall.h"
-#include "Config.h"
-#include <SFML/Graphics.hpp>
 #include "ComponentManager.h"
+#include "Config.h"
+#include "Wall.h"
 
-
+/*Wall is simple with a transform, graphic and collider.*/
 Wall::Wall(float x, float y): GameObject("Wall")
 {
 	float width = Config::SCREEN_WIDTH;
@@ -12,7 +11,6 @@ Wall::Wall(float x, float y): GameObject("Wall")
 	ComponentManager::addGraphicTo(*this, false);
 	ComponentManager::addColliderTo(*this);
 }
-
 
 Wall::~Wall()
 {

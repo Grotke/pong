@@ -15,7 +15,6 @@ ComponentManager::ComponentManager()
 {
 }
 
-
 ComponentManager::~ComponentManager()
 {
 }

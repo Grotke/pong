@@ -1,18 +1,18 @@
-#include "GraphicComponent.h"
 #include "ComponentManager.h"
-
-
+#include "GraphicComponent.h"
 
 GraphicComponent::GraphicComponent(int parentId, bool isCircle)
 	: Component(parentId), isCircle(isCircle)
 {
 }
 
-
 GraphicComponent::~GraphicComponent()
 {
 }
 
+/*A new sprite is created each time one is requested, for no particular reason 
+(it was easier than checking if one already existed).
+Of course, updating it would be more efficient.*/
 sf::Shape& GraphicComponent::getSprite()
 {
 	TransformComponent transform = ComponentManager::getTransformById(parentId);

@@ -1,10 +1,14 @@
 #pragma once
+
+/*This class keeps track of current player scores. 
+It tracks and changes the player scores.
+It also tracks whether a score was made recently 
+(and still needs to be processed).*/
 class ScoreKeeper
 {
 public:
-	ScoreKeeper();
-	~ScoreKeeper();
-
+	/*No custom constructor needed. 
+	It's never called since all methods should be static.*/
 	static void incrementScore(int player);
 	static void resetScores();
 	static int getPlayerScore(int player);

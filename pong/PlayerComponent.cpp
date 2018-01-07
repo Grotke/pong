@@ -1,8 +1,6 @@
-#include "PlayerComponent.h"
 #include "ComponentManager.h"
+#include "PlayerComponent.h"
 #include "ScoreKeeper.h"
-
-
 
 PlayerComponent::PlayerComponent(int parentId, sf::Keyboard::Key inUpKey, sf::Keyboard::Key inDownKey)
 	: Component(parentId), upKey(inUpKey), downKey(inDownKey)
@@ -11,18 +9,20 @@ PlayerComponent::PlayerComponent(int parentId, sf::Keyboard::Key inUpKey, sf::Ke
 	goingDown = false;
 }
 
-
 PlayerComponent::~PlayerComponent()
 {
 }
 
 void PlayerComponent::update(float secondsPassed)
 {
+	//Stop the paddle if a score was recently made and the game is still processing it.
 	if (ScoreKeeper::scoreWasMade())
 	{
 		goingUp = false;
 		goingDown = false;
 	}
+
+	//Stop moving if both keys are in the same state, otherwise move as expected.
 	if (!(goingUp ^ goingDown))
 	{
 		ComponentManager::getMovementById(parentId).setMoveDirection(sf::Vector2f(0.f, 0.f));

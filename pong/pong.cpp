@@ -1,74 +1,143 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <TGUI/TGUI.hpp>
+//Standard
 #include <iostream>
-#include "Config.h"
-#include "Paddle.h"
+//SFML
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+//TGUI
+#include <TGUI/TGUI.hpp>
+//Pong
 #include "Ball.h"
-#include "Wall.h"
-#include <array>
-#include "ScoreKeeper.h"
-#include "SoundManager.h"
 #include "ComponentManager.h"
+#include "Config.h"
+#include "ControlTypeConfig.h"
+#include "GUI.h"
+#include "Paddle.h"
+#include "ScoreKeeper.h"
 #include "Settings.h"
+#include "SoundManager.h"
+#include "Wall.h"
 
-struct ControlTypeConfig
-{
-	ControlTypeConfig(const std::string& p1, const std::string& p2) : p1ControlType(p1), p2ControlType(p2) {};
-	std::string p1ControlType;
-	std::string p2ControlType;
-};
-
-void constructDottedLine(sf::VertexArray&, int, int);
-void createGameObjects(std::vector<GameObject*>& objects, const std::string& p1Control, const std::string& p2Control);
+//Function declarations
 bool ballIsOutOfBounds(const sf::Vector2u& screenSize);
-void resetObjects(std::vector<GameObject*>& objects);
+void changeScoreText(sf::Text& player1Score, sf::Text& player2Score);
+void constructDottedLine(sf::VertexArray&, int, int);
+void countDownOnGameStart(sf::RenderWindow& window, sf::Clock& clock, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score);
+void createGameObjects(std::vector<GameObject*>& objects, const std::string& p1Control, const std::string& p2Control);
 void drawGameScreen(sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score);
-void drawTitleScreen(tgui::Gui& gui, sf::RenderWindow& window, sf::Text& title);
-void drawPlayerConfigScreen(tgui::Gui& gui, sf::RenderWindow& window, sf::Text& title);
-void drawPauseScreen(tgui::Gui& gui, sf::RenderWindow& window);
-void drawControlsScreen(tgui::Gui& gui);
-void pauseScreen(tgui::Gui& gui, sf::RenderWindow& window);
-void score(sf::Text& player1Score, sf::Text& player2Score);
-int setUpScores(sf::Text& player1Score, sf::Text& player2Score);
-void runUpdates(float secondsPassed);
-void processEvents(sf::Event& event);
-void quitFunction(sf::RenderWindow& window);
 int gameLoop(sf::RenderWindow& window, tgui::Gui& gui, const ControlTypeConfig& controlTypes);
-void processControlTypes(tgui::Gui& gui, sf::RenderWindow& window);
-void blankReturn();
-bool goBack;
+void processEvents(sf::Event& event);
+void resetObjects(std::vector<GameObject*>& objects);
+void runUpdates(float secondsPassed);
+void score(sf::Clock& clock, sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score);
+void setUpScores(sf::Text& player1Score, sf::Text& player2Score);
+void softResetGame(sf::Clock& clock);
+
+//Initialize global variables
 Settings settings = Settings("oswald.ttf");
+GUI guiManager = GUI(gameLoop);
+bool restart = false;
+std::vector<GameObject*> objects;
 
-
-
+/*Entry point. Set up game and gui. Seed random number generator.*/
 int main() 
 {
-		srand(time(NULL));
-		sf::RenderWindow window(sf::VideoMode(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT), "Super Pong");
-		tgui::Gui gui{ window };
-		sf::Text title;
-		drawTitleScreen(gui, window, title);
+	srand(time(NULL));
+	sf::RenderWindow window(sf::VideoMode(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT), "Super Pong");
+	tgui::Gui gui{ window };
+	sf::Text title;
 
-		while (window.isOpen())
+	//Start with title screen
+	guiManager.setUpTitleScreen(gui, window, title, settings);
+
+	//Process events from title screen, title screen handles screen transitions after this
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
 		{
-			sf::Event event;
-			while (window.pollEvent(event))
+			if (event.type == sf::Event::Closed)
 			{
-				if (event.type == sf::Event::Closed)
-				{
-					window.close();
-				}
-				gui.handleEvent(event);
+				window.close();
 			}
-			window.clear(sf::Color::Black);
-			window.draw(title);
-			gui.draw();
-			window.display();
+			gui.handleEvent(event);
 		}
+
+		window.clear(sf::Color::Black);
+		window.draw(title);
+		gui.draw();
+		window.display();
+	}
 	return 0;
 }
 
+/*This game loop should be passed to the GUI class, which will call it. Game objects are created and updated here. 
+The game can be reset or paused.*/
+int gameLoop(sf::RenderWindow& window, tgui::Gui& gui, const ControlTypeConfig& initControl)
+{
+	createGameObjects(objects, initControl.p1ControlType, initControl.p2ControlType);
+
+	sf::VertexArray lines(sf::Lines);
+	sf::Clock clock;
+
+	sf::Text player1Score;
+	sf::Text player2Score;
+
+	setUpScores(player1Score, player2Score);
+
+	if (!SoundManager::initialize())
+	{
+		return -1;
+	}
+
+	countDownOnGameStart(window, clock, lines, player1Score, player2Score);
+
+	while (window.isOpen())
+	{
+		bool restart = false;
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+			else if (event.type == sf::Event::KeyReleased)
+			{
+				if (event.key.code == sf::Keyboard::R)
+				{
+					//"Soft" reset means scores aren't reset but everything else is
+					softResetGame(clock);
+					break;
+				}
+				else if (event.key.code == sf::Keyboard::Escape)
+				{
+					guiManager.runPauseScreen(gui, window);
+					clock.restart();
+				}
+			}
+			processEvents(event);
+		}
+
+		if (!restart){
+			//Plays a "Ball Scored" sound if a score was made
+			if (ballIsOutOfBounds(window.getSize()))
+			{
+				score(clock, window, lines, player1Score, player2Score);
+			}
+
+			sf::Time current = clock.getElapsedTime();
+			runUpdates(current.asSeconds());
+		}	
+
+		clock.restart();
+
+		drawGameScreen(window, lines, player1Score, player2Score);
+		window.display();
+	}
+	return 0;
+}
+
+/*Pass events to each player component since only player controlled paddles respond to input*/
 void processEvents(sf::Event& event)
 {
 	for (auto player : ComponentManager::getPlayers())
@@ -77,6 +146,7 @@ void processEvents(sf::Event& event)
 	}
 }
 
+/*Run updates on each set of updateable components*/
 void runUpdates(float secondsPassed)
 {
 	for (auto player : ComponentManager::getPlayers())
@@ -100,6 +170,7 @@ void runUpdates(float secondsPassed)
 	}
 }
 
+/*Build halfway mark of game board*/
 void constructDottedLine(sf::VertexArray& lines, int lineLength, int spacing)
 {
 	float middleOfScreen = Config::SCREEN_WIDTH / 2;
@@ -107,48 +178,46 @@ void constructDottedLine(sf::VertexArray& lines, int lineLength, int spacing)
 	while (currentHeight < Config::SCREEN_HEIGHT)
 	{
 		currentHeight += spacing;
+		//Lines have a start point and an end point
 		lines.append(sf::Vector2f(middleOfScreen, currentHeight));
 		lines.append(sf::Vector2f(middleOfScreen, lineLength + currentHeight));
 		currentHeight += lineLength;
 	}
 }
 
-int loadFont(sf::Font& font)
-{
-	if (!font.loadFromFile("oswald.ttf"))
-	{
-		return 0;
-	}
-	return 1;
-}
-
-int setUpScores(sf::Text& player1Score, sf::Text& player2Score)
+/*Set up score strings and reset score tally*/
+void setUpScores(sf::Text& player1Score, sf::Text& player2Score)
 {
 	player1Score.setFont(settings.getFont());
 	player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
 	player1Score.setCharacterSize(48);
-	player1Score.setPosition(Config::SCREEN_WIDTH / 2 - 40, 30);
+	//Score spacings were chosen arbitrarily to look nice
 	player1Score.setFillColor(sf::Color::White);
-
+	player1Score.setPosition(Config::SCREEN_WIDTH / 2 - 40, 30);
+	
 	player2Score.setFont(settings.getFont());
 	player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
 	player2Score.setCharacterSize(48);
 	player2Score.setFillColor(sf::Color::White);
 	player2Score.setPosition(Config::SCREEN_WIDTH / 2 + 20, 30);
+
 	ScoreKeeper::resetScores();
-	return 0;
 }
 
-void score(sf::Text& player1Score, sf::Text& player2Score)
+/*Change score text and play sound increase*/
+void changeScoreText(sf::Text& player1Score, sf::Text& player2Score)
 {
 	player1Score.setString(std::to_string(ScoreKeeper::getPlayerScore(1)));
 	player2Score.setString(std::to_string(ScoreKeeper::getPlayerScore(2)));
 	SoundManager::playScoreIncrease();
 }
 
+/*Draws the midway line, all graphic components, and scores 
+but doesn't display the screen in case other things need to be drawn.*/
 void drawGameScreen(sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score)
 {
 	window.clear(sf::Color::Black);
+
 	constructDottedLine(lines, 5, 20);
 
 	auto graphics = ComponentManager::getGraphics();
@@ -162,6 +231,8 @@ void drawGameScreen(sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& 
 	window.draw(player2Score);
 }
 
+/*Integer-izes the amount of time that needs to elapse to equal the duration passed in.
+Used to count down the number of seconds until the game starts*/
 int countDown(float elapsedTimeInSeconds, float duration)
 {
 	return (int)ceil(duration - elapsedTimeInSeconds);
@@ -169,6 +240,7 @@ int countDown(float elapsedTimeInSeconds, float duration)
 
 void createGameObjects(std::vector<GameObject*>& objects, const std::string& p1Control, const std::string& p2Control)
 {
+	//Ball needs created before the paddles since the paddles need a reference to the ball
 	Ball* ball = new Ball(Config::SCREEN_WIDTH / 2.f, Config::SCREEN_HEIGHT / 2.f, 15.f, 800.f);
 	Paddle* player1 = new Paddle(Config::SCREEN_WIDTH / 15, Config::SCREEN_HEIGHT / 2, 300.f, p1Control, *ball);
 	Paddle* player2 = new Paddle(Config::SCREEN_WIDTH - (Config::SCREEN_WIDTH / 15), Config::SCREEN_HEIGHT / 2, 300.f, p2Control, *ball);
@@ -189,12 +261,16 @@ void resetObjects(std::vector<GameObject*>& objects)
 	}
 }
 
+/*Checks all transforms to see if they're a ball out of bounds
+Currently Pong only has one ball but this would make it easier to have multiple balls*/
 bool ballIsOutOfBounds(const sf::Vector2u& screenSize)
 {
 	for (auto transform : ComponentManager::getTransforms())
 	{
+		/*Result returns 1 if out of bounds on right, 
+		-1 if out of bounds on left and 0 if not out of bounds*/
 		int result = transform.second->isOutOfBounds(screenSize);
-		if (result != 0 && ComponentManager::getParentById(transform.first).getType() == "Ball")
+		if (result && ComponentManager::getParentById(transform.first).getType() == "Ball")
 		{
 			SoundManager::playBallScored();
 
@@ -212,186 +288,13 @@ bool ballIsOutOfBounds(const sf::Vector2u& screenSize)
 	return false;
 }
 
-void drawPlayerConfigScreen(tgui::Gui& gui, sf::RenderWindow& window, sf::Text& title)
-{
-	gui.removeAllWidgets();
-
-	tgui::Label::Ptr p1Label = tgui::Label::create();
-	p1Label->setPosition(tgui::bindWidth(gui)*0.25, tgui::bindHeight(gui)*0.050);
-	p1Label->setText("Left Paddle");
-	p1Label->setFont(settings.getFont());
-	p1Label->setTextSize(64);
-	p1Label->setTextColor(sf::Color::White);
-	gui.add(p1Label);
-
-	tgui::Tab::Ptr p1Tabs = tgui::Tab::create();
-	p1Tabs->add("P1");
-	p1Tabs->add("AI");
-	p1Tabs->setPosition(tgui::bindWidth(gui)*0.35, tgui::bindHeight(gui)*0.250);
-	p1Tabs->setTabHeight(70);
-	gui.add(p1Tabs, "p1Tabs");
-
-
-	tgui::Label::Ptr p2Label = tgui::Label::create();
-	p2Label->setPosition(tgui::bindWidth(gui)*0.25, tgui::bindHeight(gui)*0.400);
-	p2Label->setText("Right Paddle");
-	p2Label->setFont(settings.getFont());
-	p2Label->setTextSize(64);
-	p2Label->setTextColor(sf::Color::White);
-	gui.add(p2Label);
-
-
-	tgui::Tab::Ptr p2Tabs = tgui::Tab::create();
-	p2Tabs->add("P2");
-	p2Tabs->add("AI");
-	p2Tabs->setPosition(tgui::bindWidth(gui)*0.35, tgui::bindHeight(gui)*0.600);
-	p2Tabs->setTabHeight(70);
-	gui.add(p2Tabs, "p2Tabs");
-
-	tgui::Button::Ptr play = tgui::Button::create();
-	play->setPosition(tgui::bindWidth(gui)*0.65, tgui::bindHeight(gui)*0.800);
-	play->setSize(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.15);
-	play->setText("OK");
-	play->connect("pressed", processControlTypes, std::ref(gui), std::ref(window));
-	gui.add(play, "MyButton");
-
-
-	tgui::Button::Ptr back = tgui::Button::create();
-	back->setPosition(tgui::bindWidth(gui)*0.15, tgui::bindHeight(gui)*0.850);
-	back->setSize(tgui::bindWidth(gui)*0.2, tgui::bindHeight(gui)*0.1);
-	back->setText("Back");
-	back->connect("pressed", drawTitleScreen, std::ref(gui), std::ref(window), std::ref(title));
-	gui.add(back, "MyButton");
-}
-
-void initialize(sf::Font& font) {
-	loadFont(font);
-}
-
-void processControlTypes(tgui::Gui& gui, sf::RenderWindow& window)
-{
-
-	ControlTypeConfig controlTypes = ControlTypeConfig(gui.get<tgui::Tab>("p1Tabs")->getSelected(), gui.get<tgui::Tab>("p2Tabs")->getSelected());
-	gameLoop(window, gui, controlTypes);
-}
-
-void drawTitleScreen(tgui::Gui& gui, sf::RenderWindow& window, sf::Text& title)
-{
-	gui.removeAllWidgets();
-	tgui::Label::Ptr titleLabel = tgui::Label::create();
-	titleLabel->setPosition(tgui::bindWidth(gui)*0.32, tgui::bindHeight(gui)*0.10);
-	titleLabel->setText("PONG");
-	titleLabel->setFont(settings.getFont());
-	titleLabel->setTextSize(104);
-	titleLabel->setTextColor(sf::Color::White);
-	gui.add(titleLabel);
-
-	tgui::Button::Ptr play = tgui::Button::create();
-	play->setPosition(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.50);
-	play->setSize(tgui::bindWidth(gui)*0.4, tgui::bindHeight(gui)*0.15);
-	play->setText("Play");
-	play->connect("pressed", drawPlayerConfigScreen, std::ref(gui), std::ref(window), std::ref(title));
-	gui.add(play, "MyButton");
-
-	tgui::Button::Ptr quit = tgui::Button::create();
-	quit->setPosition(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.75);
-	quit->setSize(tgui::bindWidth(gui)*0.4, tgui::bindHeight(gui)*0.15);
-	quit->setText("Quit");
-	quit->connect("pressed", quitFunction, std::ref(window));
-	gui.add(quit, "MyButton");
-}
-
-void quitFunction(sf::RenderWindow& window)
-{
-	window.close();
-}
-
-void drawPauseScreen(tgui::Gui& gui, sf::RenderWindow& window)
-{
-	goBack = false;
-		pauseScreen(gui, window);
-		while (window.isOpen() && goBack == false)
-		{
-			sf::Event event;
-			while (window.pollEvent(event))
-			{
-				if (event.type == sf::Event::Closed)
-				{
-					window.close();
-				}
-				if (event.type == sf::Event::KeyReleased)
-				{
-					if (event.key.code == sf::Keyboard::Escape)
-					{
-						return;
-					}
-				}
-				gui.handleEvent(event);
-			}
-			window.clear(sf::Color::Black);
-			gui.draw();
-			window.display();
-		}
-}
-
-void pauseScreen(tgui::Gui& gui, sf::RenderWindow& window)
-{
-	gui.removeAllWidgets();
-	tgui::Button::Ptr set = tgui::Button::create();
-	set->setPosition(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.100);
-	set->setSize(tgui::bindWidth(gui)*0.4, tgui::bindHeight(gui)*0.15);
-	set->setText("Settings");
-	set->hide();
-	set->connect("pressed", quitFunction, std::ref(window));
-	gui.add(set, "MyButton");
-
-	tgui::Button::Ptr changePlayers = tgui::Button::create();
-	changePlayers->setPosition(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.300);
-	changePlayers->setSize(tgui::bindWidth(gui)*0.4, tgui::bindHeight(gui)*0.15);
-	changePlayers->setText("Change Player Status");
-	changePlayers->hide();
-	gui.add(changePlayers, "MyButton");
-
-	tgui::Button::Ptr resume = tgui::Button::create();
-	resume->setPosition(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.500);
-	resume->setSize(tgui::bindWidth(gui)*0.4, tgui::bindHeight(gui)*0.15);
-	resume->setText("Resume");
-	resume->connect("pressed", blankReturn);
-	gui.add(resume, "MyButton");
-
-	tgui::Button::Ptr quit = tgui::Button::create();
-	quit->setPosition(tgui::bindWidth(gui)*0.3, tgui::bindHeight(gui)*0.800);
-	quit->setSize(tgui::bindWidth(gui)*0.4, tgui::bindHeight(gui)*0.15);
-	quit->setText("Quit");
-	quit->connect("pressed", quitFunction, std::ref(window));
-	gui.add(quit, "MyButton");
-}
-
-void blankReturn()
-{
-	goBack = true;
-}
-
-int gameLoop(sf::RenderWindow& window, tgui::Gui& gui, const ControlTypeConfig& initControl)
-{
-	std::vector<GameObject*> objects;
-	createGameObjects(objects, initControl.p1ControlType, initControl.p2ControlType);
-
-	sf::Text player1Score;
-	sf::Text player2Score;
-
-	setUpScores(player1Score, player2Score);
-
-	sf::VertexArray lines(sf::Lines);
-	sf::Clock clock;
-	if (!SoundManager::initialize())
-	{
-		return -1;
-	}
+/*Puts a countdown on the screen so the player has time to get situated*/
+void countDownOnGameStart(sf::RenderWindow& window, sf::Clock& clock, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score) {
 	sf::Text countText;
 	countText.setFont(settings.getFont());
 	countText.setCharacterSize(200);
 	countText.setFillColor(sf::Color::Green);
+
 	while (clock.getElapsedTime() < sf::seconds(2.0f))
 	{
 		countText.setString(std::to_string(countDown(clock.getElapsedTime().asSeconds(), 2.0f)));
@@ -402,85 +305,45 @@ int gameLoop(sf::RenderWindow& window, tgui::Gui& gui, const ControlTypeConfig& 
 		window.display();
 	}
 	clock.restart();
-	while (window.isOpen())
+}
+
+//"Soft" reset means scores aren't reset but everything else is
+void softResetGame(sf::Clock& clock) 
+{
+	resetObjects(objects);
+	clock.restart();
+	restart = true;
+}
+
+void score(sf::Clock& clock, sf::RenderWindow& window, sf::VertexArray& lines, sf::Text& player1Score, sf::Text& player2Score) 
+{
+	//Acts as a lock, some components act differently if a score has just been made
+	ScoreKeeper::setScoreMade(true);
+	sf::Time firstPause = clock.getElapsedTime();
+	sf::Time lastPause = firstPause;
+
+	/*Spends a half second running updates so the ball can finish moving off screen.
+	The lock makes sure the paddles stop moving.*/
+	while ((clock.getElapsedTime() - firstPause) < sf::seconds(0.5f))
 	{
-		bool restart = false;
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-			}
-			if (event.type == sf::Event::KeyReleased)
-			{
-				if (event.key.code == sf::Keyboard::R)
-				{
-					resetObjects(objects);
-					clock.restart();
-					restart = true;
-					break;
-				}
-				if (event.key.code == sf::Keyboard::Escape)
-				{
-					drawPauseScreen(gui, window);
-					clock.restart();
-					sf::Text countText;
-					countText.setFont(settings.getFont());
-					countText.setCharacterSize(200);
-					countText.setFillColor(sf::Color::Green);
-					while (clock.getElapsedTime() < sf::seconds(0.f))
-					{
-						countText.setString(std::to_string(countDown(clock.getElapsedTime().asSeconds(), 1.0f)));
-						countText.setOrigin(countText.getLocalBounds().width / 2, countText.getLocalBounds().height / 2);
-						countText.setPosition(sf::Vector2f(Config::SCREEN_WIDTH / 2, Config::SCREEN_HEIGHT / 3));
-						drawGameScreen(window, lines, player1Score, player2Score);
-						window.display();
-					}
-					clock.restart();
-				}
-			}
-			processEvents(event);
-		}
-
-		if (ballIsOutOfBounds(window.getSize()))
-		{
-			ScoreKeeper::setScoreMade(true);
-			sf::Time firstPause = clock.getElapsedTime();
-			sf::Time lastPause = firstPause;
-			while ((clock.getElapsedTime() - firstPause) < sf::seconds(0.5f))
-			{
-				runUpdates(lastPause.asSeconds());
-				lastPause = clock.getElapsedTime() - lastPause;
-
-				drawGameScreen(window, lines, player1Score, player2Score);
-				window.display();
-			}
-
-			score(player1Score, player2Score);
-
-			while (clock.getElapsedTime() - firstPause < sf::seconds(2.0f))
-			{
-				drawGameScreen(window, lines, player1Score, player2Score);
-				window.display();
-			}
-
-			ScoreKeeper::setScoreMade(false);
-			resetObjects(objects);
-			clock.restart();
-			restart = true;
-		}
-
-		if (restart)
-		{
-			continue;
-		}
-		sf::Time current = clock.getElapsedTime();
-		runUpdates(current.asSeconds());
-		clock.restart();
+		runUpdates(lastPause.asSeconds());
+		lastPause = clock.getElapsedTime() - lastPause;
 
 		drawGameScreen(window, lines, player1Score, player2Score);
 		window.display();
 	}
-	return 0;
+
+	//Change the score text and play a score increase sound
+	changeScoreText(player1Score, player2Score);
+
+	/*Spends 2 seconds drawing the screen without doing any 
+	updates to give the player a breather*/
+	while (clock.getElapsedTime() - firstPause < sf::seconds(2.0f))
+	{
+		drawGameScreen(window, lines, player1Score, player2Score);
+		window.display();
+	}
+
+	ScoreKeeper::setScoreMade(false);
+	softResetGame(clock);
 }

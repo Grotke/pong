@@ -1,8 +1,11 @@
 #pragma once
+
 #include "Component.h"
 #include "Contact.h"
 #include "TransformComponent.h"
 
+/*This component makes an object collidable. 
+It resolves collisions with other collider components.*/
 class ColliderComponent :
 	public Component
 {

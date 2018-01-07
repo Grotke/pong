@@ -1,11 +1,10 @@
-#include "Vectors.h"
 #include <math.h>
 
+#include "Vectors.h"
 
 Vectors::Vectors()
 {
 }
-
 
 Vectors::~Vectors()
 {
@@ -14,10 +13,11 @@ Vectors::~Vectors()
 sf::Vector2f Vectors::normalize(const sf::Vector2f& input)
 {
 	float mag = magnitude(input);
+
+	//Make sure the vector isn't 0 to prevent divide by zero error.
 	if (mag)
 	{
 		return sf::Vector2f(input.x / mag, input.y / mag);
-
 	}
 	return sf::Vector2f(0.f, 0.f);
 }
