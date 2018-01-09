@@ -1,0 +1,42 @@
+# Pong
+Pong was created in C++ to get familiar with SFML, game architecture and rapid development.
+
+It has the option of playing AI vs AI, AI vs Player or Player vs Player with two people at the same keyboard.
+
+![Title Screen](https://github.com/Grotke/screenshots/blob/master/2017-11-09%2006_43_30-Super%20Pong.png)
+![AI or Player Select Screen](https://github.com/Grotke/screenshots/blob/master/Player%20Config%20Player.png)
+![In Play](https://github.com/Grotke/screenshots/blob/master/More%20Pong%20Play.png)
+
+## Audio Warning
+Just to warn you, the audio isn't adjustable or muteable in game and will be pretty loud. Didn't get around to implementing adjustable audio and probably never will.
+
+## Controls
+R does a soft reset which resets the paddles and ball but not the scores.
+
+The up and down arrow keys control the right paddle.
+
+W and S control the left paddle.
+
+Esc brings up the options menu.
+
+## How to Build
+Built with Visual Studio 2017 15.5.2. Just open the solution file (pong.sln) in VS and build it from there. 
+
+## Built With
+Libraries included in libs/
+
+* [SFML](https://www.sfml-dev.org/) - Used for 2D graphics, input and audio handling
+* [TGUI](https://tgui.eu/) - GUI library for SFML
+
+Audio created by me in
+* [FL Studio](https://www.image-line.com/flstudio/) - Music production environment
+
+## Deployment
+To create a standalone project:
+
+1. Build the release version of Pong in Visual Studio. Executable should be in pong/Release. Copy it to its own folder.
+2. Copy all the dlls from libs\SFML-2.4.2-windows-vc14-32-bit\SFML-2.4.2\bin into the same folder as pong.exe.
+3. Copy tgui.dll from libs\TGUI-0.7.5-vc14-32bit-for-SFML-2.4.2\TGUI-0.7\lib into the same folder as pong.exe.
+4. Copy sounds/ and oswald.ttf from pong/ into the same folder as pong.exe.
+
+You should now be able to run the executable and start playing Pong.
