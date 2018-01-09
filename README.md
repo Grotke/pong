@@ -3,6 +3,8 @@ Pong was created in C++ to get familiar with SFML, game architecture and rapid d
 
 It has the option of playing AI vs AI, AI vs Player or Player vs Player with two people at the same keyboard.
 
+For a postmortem where I talk about what I learned while developing Pong (surprisingly more than I expected), read [Pong Postmortem](http://www.josephcmontgomery.com/blog/postmortem-pong)
+
 ![Play](http://www.josephcmontgomery.com/uploads/4/5/8/3/45834621/pong-fixed_orig.gif)
 
 ## Audio Warning
