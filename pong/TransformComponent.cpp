@@ -6,7 +6,6 @@ TransformComponent::TransformComponent(int parentId, const sf::Vector2f& startPo
 	setPosition(startPosition);
 }
 
-
 TransformComponent::~TransformComponent()
 {
 }
@@ -18,7 +17,6 @@ void TransformComponent::reset()
 
 void TransformComponent::update(float secondsPassed)
 {
-
 }
 
 void TransformComponent::setPosition(float x, float y)
@@ -42,6 +40,7 @@ void TransformComponent::addPosition(float x, float y)
 	position.y += y;
 }
 
+//Returns -1 if scored left, 1 if scored right and 0 if still in play.
 int TransformComponent::isOutOfBounds(const sf::Vector2u& screenSize)
 {
 	if (position.x > screenSize.x || position.y > screenSize.y || position.y < 0 || position.x < 0)

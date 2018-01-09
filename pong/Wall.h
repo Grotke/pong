@@ -1,7 +1,8 @@
 #pragma once
-#include "GameObject.h"
-#include <SFML/Graphics.hpp>
 
+#include "GameObject.h"
+
+/*Wall that borders top and bottom of screen.*/
 class Wall:
 	public GameObject
 {

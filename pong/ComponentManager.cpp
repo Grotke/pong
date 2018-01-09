@@ -15,7 +15,6 @@ ComponentManager::ComponentManager()
 {
 }
 
-
 ComponentManager::~ComponentManager()
 {
 }
@@ -126,6 +125,33 @@ void ComponentManager::addAITo(const GameObject& object, const Ball& ball)
 	ais[id] = ai;
 }
 
+void ComponentManager::removeAIFrom(const GameObject& object)
+{
+	int id = getOrAddObjectId(object);
+	delete ais[id];
+	ais.erase(id);
+}
+
+void ComponentManager::removePlayerFrom(const GameObject& object)
+{
+	int id = getOrAddObjectId(object);
+	delete players[id];
+	players.erase(id);
+}
+
+void ComponentManager::removeControlComponents(const GameObject& object)
+{
+	int id = getOrAddObjectId(object);
+	if (ais.count(id))
+	{
+		removeAIFrom(object);
+	}
+	if (players.count(id))
+	{
+		removePlayerFrom(object);
+	}
+}
+
 void ComponentManager::addGraphicTo(const GameObject& object, bool isCircle)
 {
 	int id = getOrAddObjectId(object);
@@ -196,3 +222,4 @@ int ComponentManager::getNextId()
 {
 	return nextId++;
 }
+

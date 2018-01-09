@@ -1,7 +1,12 @@
 #pragma once
-#include "Component.h"
+
 #include <SFML/Graphics.hpp>
 
+#include "Component.h"
+
+/*This component holds the position, width and height of an object.
+It can also test for out of bounds, which is used 
+to determine if a ball has been scored.*/
 class TransformComponent :
 	public Component
 {

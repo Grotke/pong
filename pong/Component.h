@@ -1,5 +1,6 @@
 #pragma once
 
+/*Base class for components.*/
 class Component
 {
 	public:

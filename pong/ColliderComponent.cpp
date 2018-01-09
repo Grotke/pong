@@ -1,12 +1,10 @@
 #include "ColliderComponent.h"
-#include "Contact.h"
 #include "ComponentManager.h"
-
+#include "Contact.h"
 
 ColliderComponent::ColliderComponent(int parentId) : Component(parentId)
 {
 }
-
 
 ColliderComponent::~ColliderComponent()
 {
@@ -17,6 +15,9 @@ const std::string& ColliderComponent::getPrevCollisionType() const
 	return prevCollisionType;
 }
 
+/*Checks for a collision against every other collidable object.
+	Returns data on the first collision 
+	and remembers the collision type for audio purposes.*/
 Contact ColliderComponent::resolve()
 {
 	prevCollisionType = "";
@@ -33,13 +34,15 @@ Contact ColliderComponent::resolve()
 			}
 		}
 	}
-	//OUTLINE OF VELOCITY TRANSFER
-	//Velocity of paddle should transfer to velocity of ball
-	//Paddle (and maybe ball too) should have current velocity and max speed
-	//What happens when ball hits corner of paddle versus head on
 	return Contact::getNullContact();
 }
 
+/*Checks for overlap on the X and Y axis with another collider.
+A collision has occured if both axes overlaps.
+Overlap occurs if the distance between the centers 
+is less than the sum of the half lengths of each collider on the axis being tested.
+The axis with the least overlap, along with the amount of overlap, is returned 
+since it requires the least adjustment to have both axes no longer overlapping.*/
 Contact ColliderComponent::collidesWith(const ColliderComponent& other) const
 {
 	float lengthBothX = other.getHalfLengthX() + getHalfLengthX();
@@ -75,19 +78,16 @@ float ColliderComponent::getHalfLengthX() const
 float ColliderComponent::getHalfLengthY() const
 {
 	return ComponentManager::getTransformById(parentId).getHeight() / 2;
-
 }
 
 float ColliderComponent::getCenterX() const
 {
 	return ComponentManager::getTransformById(parentId).getPosition().x;
-
 }
 
 float ColliderComponent::getCenterY() const
 {
 	return ComponentManager::getTransformById(parentId).getPosition().y;
-
 }
 
 void ColliderComponent::setPrevCollisionType(const std::string& newCollision)
