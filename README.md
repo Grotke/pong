@@ -3,9 +3,7 @@ Pong was created in C++ to get familiar with SFML, game architecture and rapid d
 
 It has the option of playing AI vs AI, AI vs Player or Player vs Player with two people at the same keyboard.
 
-![Title Screen](https://github.com/Grotke/screenshots/blob/master/2017-11-09%2006_43_30-Super%20Pong.png)
-![AI or Player Select Screen](https://github.com/Grotke/screenshots/blob/master/Player%20Config%20Player.png)
-![In Play](https://github.com/Grotke/screenshots/blob/master/More%20Pong%20Play.png)
+![Play](http://www.josephcmontgomery.com/uploads/4/5/8/3/45834621/pong-fixed_orig.gif)
 
 ## Audio Warning
 Just to warn you, the audio isn't adjustable or muteable in game and will be pretty loud. Didn't get around to implementing adjustable audio and probably never will.
