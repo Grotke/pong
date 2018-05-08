@@ -5,7 +5,7 @@ It has the option of playing AI vs AI, AI vs Player or Player vs Player with two
 
 For a postmortem where I talk about what I learned while developing Pong (surprisingly more than I expected), read [Pong Postmortem](http://www.josephcmontgomery.com/blog/postmortem-pong)
 
-![Play](http://www.josephcmontgomery.com/uploads/4/5/8/3/45834621/pong-fixed_orig.gif)
+![Play](http://www.josephcmontgomery.com/uploads/4/5/8/3/45834621/pong-fixed-orig_orig.gif)
 
 ## Audio Warning
 Just to warn you, the audio isn't adjustable or muteable in game and will be pretty loud. Didn't get around to implementing adjustable audio and probably never will.
