@@ -8,6 +8,7 @@ std::map<int, GraphicComponent *> ComponentManager::graphics;
 std::map<int, AIComponent *> ComponentManager::ais;
 std::map<int, PlayerComponent *> ComponentManager::players;
 std::map<int, AudioComponent *> ComponentManager::audios;
+std::map<int, NetworkComponent *> ComponentManager::networks;
 std::map<const GameObject * const, int> ComponentManager::objectMap;
 std::map<int, const GameObject *> ComponentManager::idMap;
 
@@ -54,6 +55,11 @@ const std::map<int, AudioComponent *> ComponentManager::getAudios()
 	return audios;
 }
 
+const std::map<int, NetworkComponent *> ComponentManager::getNetworks()
+{
+	return networks;
+}
+
 TransformComponent& ComponentManager::getTransformByParent(const GameObject& parent)
 {
 	return *(transforms[objectMap[&parent]]);
@@ -87,6 +93,11 @@ PlayerComponent& ComponentManager::getPlayerByParent(const GameObject& parent)
 AudioComponent& ComponentManager::getAudioByParent(const GameObject& parent)
 {
 	return *audios[objectMap[&parent]];
+}
+
+NetworkComponent& ComponentManager::getNetworkByParent(const GameObject& parent)
+{
+	return *networks[objectMap[&parent]];
 }
 
 void ComponentManager::addTransformTo(const GameObject& object, const sf::Vector2f& startPos, float height, float width)
@@ -123,6 +134,12 @@ void ComponentManager::addAITo(const GameObject& object, const Ball& ball)
 	int ballId = getOrAddObjectId(ball);
 	AIComponent* ai = new AIComponent(id, ballId);
 	ais[id] = ai;
+}
+
+void ComponentManager::addNetworkTo(const GameObject& object, const NetworkComponent::NetworkMode& networkMode) {
+	int id = getOrAddObjectId(object);
+	NetworkComponent* network = new NetworkComponent(id, networkMode);
+	networks[id] = network;
 }
 
 void ComponentManager::removeAIFrom(const GameObject& object)
@@ -199,6 +216,11 @@ PlayerComponent& ComponentManager::getPlayerById(int parentId)
 AudioComponent& ComponentManager::getAudioById(int parentId)
 {
 	return *audios[parentId];
+}
+
+NetworkComponent& ComponentManager::getNetworkById(int parentId)
+{
+	return *networks[parentId];
 }
 
 const GameObject& ComponentManager::getParentById(int parentId)

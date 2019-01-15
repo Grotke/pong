@@ -9,6 +9,7 @@
 #include "GraphicComponent.h"
 #include "MovementComponent.h"
 #include "PlayerComponent.h"
+#include "NetworkComponent.h"
 
 /*This class manages the game's components,
 associating an object to its different components.
@@ -34,6 +35,7 @@ class ComponentManager
 		static const std::map<int, PlayerComponent *> getPlayers();
 		static const std::map<int, AIComponent *> getAIs();
 		static const std::map<int, AudioComponent *> getAudios();
+		static const std::map<int, NetworkComponent *> getNetworks();
 
 		/*Components must be added before they can be fetched
 		because these getters don't verify that a component exists
@@ -45,6 +47,7 @@ class ComponentManager
 		static AIComponent& getAIByParent(const GameObject& parent);
 		static PlayerComponent& getPlayerByParent(const GameObject& parent);
 		static AudioComponent& getAudioByParent(const GameObject& parent);
+		static NetworkComponent& getNetworkByParent(const GameObject& parent);
 
 		static TransformComponent& getTransformById(int parentId);
 		static ColliderComponent& getColliderById(int parentId);
@@ -53,6 +56,7 @@ class ComponentManager
 		static AIComponent& getAIById(int parentId);
 		static PlayerComponent& getPlayerById(int parentId);
 		static AudioComponent& getAudioById(int parentId);
+		static NetworkComponent& getNetworkById(int parentId);
 
 		static const GameObject& getParentById(int parentId);
 		static void addTransformTo(const GameObject& object, const sf::Vector2f& startPos, float height, float width);
@@ -62,6 +66,7 @@ class ComponentManager
 		static void addAITo(const GameObject& object, const Ball& ball);
 		static void addGraphicTo(const GameObject& object, bool isCircle);
 		static void addAudioTo(const GameObject& object);
+		static void addNetworkTo(const GameObject& object, const NetworkComponent::NetworkMode& mode);
 		
 		static void removeAIFrom(const GameObject& object);
 		static void removePlayerFrom(const GameObject& object);
@@ -75,6 +80,7 @@ class ComponentManager
 		static std::map<int, AIComponent *> ais;
 		static std::map<int, PlayerComponent *> players;
 		static std::map<int, AudioComponent *> audios;
+		static std::map<int, NetworkComponent *> networks;
 		static std::map<const GameObject * const, int> objectMap;
 		static std::map<int, const GameObject *> idMap;
 		static int getOrAddObjectId(const GameObject& object);

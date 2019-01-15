@@ -3,7 +3,7 @@
 
 
 
-NetworkComponent::NetworkComponent()
+NetworkComponent::NetworkComponent(int parentId, NetworkMode mode) : Component(parentId)
 {
 	socket.setBlocking(false);
 	if(socket.bind(port, ipAddress) != sf::Socket::Done){
