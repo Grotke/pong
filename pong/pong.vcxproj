@@ -160,6 +160,7 @@
     <ClCompile Include="GraphicComponent.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
+    <ClCompile Include="NetworkComponent.cpp" />
     <ClCompile Include="Paddle.cpp" />
     <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="pong.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="GraphicComponent.h" />
     <ClInclude Include="GUI.h" />
     <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="NetworkComponent.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="ScoreKeeper.h" />
